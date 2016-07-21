@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.ContactsMapper" >
+    <!-- 联系人 -->
+    <resultMap id="contactsVoMapper" type="com.yougou.merchant.api.supplier.vo.ContactsVo" >    
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="supplier" property="supplier" jdbcType="VARCHAR" />
+        <result column="supply_id" property="supplyId" jdbcType="VARCHAR" />
+        <result column="supplier_code" property="supplierCode" jdbcType="VARCHAR" />
+        <result column="contact" property="contact" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="tele_phone" property="telePhone" jdbcType="VARCHAR" />
+        <result column="mobile_phone" property="mobilePhone" jdbcType="VARCHAR" />
+        <result column="fax" property="fax" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <sql id="contacts_columns">
+    	t2.id,
+			t1.supplier,
+			t2.supply_id,
+			t1.supplier_code,
+			t2.contact,
+			t2.type,
+			t2.tele_phone,
+			t2.mobile_phone,
+			t2.fax,
+			t2.email,
+			t2.address
+    </sql>
+    
+	<select id="queryContactsByVo" resultMap="contactsVoMapper" parameterType="com.yougou.merchant.api.supplier.vo.ContactsVo">
+		SELECT
+			<include refid="contacts_columns"/>
+		FROM
+			tbl_sp_supplier t1
+		INNER JOIN tbl_sp_supplier_contact t2 on (t1.id = t2.supply_id)
+		WHERE t1.delete_flag = 1 
+		<include refid="queryContactWhere"/>
+		order by t1.update_date DESC
+	</select>
+	
+	<select id="queryContactsCountByVo" resultType="int" parameterType="com.yougou.merchant.api.supplier.vo.ContactsVo">
+		SELECT
+			count(*)
+		FROM
+			tbl_sp_supplier t1
+		INNER JOIN tbl_sp_supplier_contact t2 on (t1.id = t2.supply_id)
+		WHERE t1.delete_flag = 1 
+		<include refid="queryContactWhere"/>
+	</select>
+	
+	<sql id="queryContactWhere">
+		<if test="id != null and id != ''">
+			AND t1.id = #{id, jdbcType=VARCHAR}	
+		</if>
+		<if test="supplier != null and supplier != ''">
+			AND t1.supplier like CONCAT('%', '${supplier}', '%')
+		</if>
+		<if test="supplierCode != null and supplierCode != ''">
+			AND t1.supplier_code like CONCAT('${supplierCode}','%') 
+		</if>
+		<if test="contact != null and contact != ''">
+			AND t2.contact like CONCAT('${contact}','%') 
+		</if>
+		<if test="mobilePhone != null and mobilePhone != ''">
+			AND t2.mobile_phone like CONCAT('${mobilePhone}','%') 
+		</if>
+		<if test="email != null and email != ''">
+			AND t2.email like CONCAT('${email}', '%') 
+		</if>
+		<if test="supplyId != null and supplyId != ''">
+			AND t2.supply_id = #{supplyId, jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<select id="getContactById" resultMap="contactsVoMapper" parameterType="java.lang.String">
+		SELECT
+			<include refid="contacts_columns"/>
+		FROM
+			tbl_sp_supplier t1
+		INNER JOIN tbl_sp_supplier_contact t2 on (t1.id = t2.supply_id)
+		WHERE t1.delete_flag = 1 
+		AND t2.id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertContact" parameterType="com.yougou.merchant.api.supplier.vo.ContactsVo">
+		INSERT INTO tbl_sp_supplier_contact (
+			id,
+			supply_id,
+			type,
+			contact,
+			tele_phone,
+			mobile_phone,
+			email,
+			fax,
+			address
+		)
+		VALUES
+			(
+			#{id},
+			#{supplyId},
+			#{type},
+			#{contact},
+			#{telePhone},
+			#{mobilePhone},
+			#{email},
+			#{fax},
+			#{address}
+			)
+	</insert>
+	
+	<update id="updateContact" parameterType="com.yougou.merchant.api.supplier.vo.ContactsVo">
+		UPDATE tbl_sp_supplier_contact
+		SET 
+			supply_id = #{supplyId, jdbcType=VARCHAR}, 
+			type = #{type, jdbcType=INTEGER},
+			contact = #{contact, jdbcType=VARCHAR},
+			tele_phone = #{telePhone, jdbcType=VARCHAR},
+			mobile_phone = #{mobilePhone, jdbcType=VARCHAR},
+			email = #{email, jdbcType=VARCHAR},
+			fax = #{fax, jdbcType=VARCHAR},
+			address = #{address, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteContact" parameterType="java.lang.String">
+		delete from tbl_sp_supplier_contact where supply_id = #{supplyId, jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 合同 -->
+	<resultMap id="contractVoMapper" type="com.yougou.merchant.api.supplier.vo.ContractVo" >    
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="contract_no" property="contractNo" jdbcType="VARCHAR" />
+        <result column="is_valid" property="isValid" jdbcType="VARCHAR" />
+        <result column="supplier" property="supplier" jdbcType="VARCHAR" />
+        <result column="supplier_id" property="supplierId" jdbcType="VARCHAR" />
+        <result column="supplier_code" property="supplierCode" jdbcType="VARCHAR" />
+        <result column="clearing_form" property="clearingForm" jdbcType="INTEGER" />
+        <result column="effective_date" property="effectiveDate" jdbcType="DATE" />
+        <result column="failure_date" property="failureDate" jdbcType="DATE" />
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+        <result column="attachment" property="attachment" jdbcType="VARCHAR" />
+    </resultMap>
+	
+	<select id="queryContractListByVo" resultMap="contractVoMapper" parameterType="com.yougou.merchant.api.supplier.vo.ContractVo">
+		SELECT
+			t2.id,
+			t2.contract_no,
+			t1.is_valid,
+			t1.supplier,
+			t2.supplier_id,
+			t1.supplier_code,
+			t2.clearing_form,
+			t2.effective_date,
+			t2.failure_date,
+			t2.update_time,
+			t2.update_user,
+			t2.attachment
+		FROM
+			tbl_sp_supplier t1
+		INNER JOIN tbl_sp_supplier_contract t2 ON (t1.id = t2.supplier_id)
+		WHERE t1.delete_flag = 1 
+		<include refid="queryContract_where"/>
+		order by t2.update_time desc
+	</select>
+	
+	<select id="queryContractCountByVo" resultType="int" parameterType="com.yougou.merchant.api.supplier.vo.ContractVo">
+		SELECT
+			count(*)
+		FROM
+			tbl_sp_supplier t1
+		INNER JOIN tbl_sp_supplier_contract t2 ON (t1.id = t2.supplier_id)
+		WHERE t1.delete_flag = 1 
+		<include refid="queryContract_where"/>
+	</select>
+	
+	<sql id="queryContract_where">
+		<if test="id != null and id != ''">
+			AND t2.id = #{id, jdbcType=VARCHAR}	
+		</if>
+		<if test="supplier != null and supplier != ''">
+			AND t1.supplier like CONCAT('%', '${supplier}', '%')
+		</if>
+		<if test="supplierCode != null and supplierCode != ''"> 
+			AND t1.supplier_code like CONCAT('${supplierCode}','%') 
+		</if>
+		<if test="contractNo != null and contractNo != ''"> 
+			AND t2.contract_no like CONCAT('${contractNo}','%')
+		</if>
+		<if test="isValid != null"> 
+			AND t1.is_valid = #{isValid, jdbcType=INTEGER}
+		</if>
+		<if test="effectiveDate != null and effectiveDate != ''"> 
+			AND t2.effective_date <![CDATA[ >= ]]> #{effectiveDate}	
+		</if>
+		<if test="failureDate != null and failureDate != ''">
+			AND t2.failure_date <![CDATA[ <= ]]> #{failureDate}	
+		</if>
+		<if test="supplierId != null and supplierId != ''">
+			AND t2.supplier_id = #{supplierId, jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<select id="getContractById" resultMap="contractVoMapper" parameterType="java.lang.String">
+		SELECT
+			t2.id,
+			t2.contract_no,
+			t1.is_valid,
+			t1.supplier,
+			t2.supplier_id,
+			t1.supplier_code,
+			t2.clearing_form,
+			t2.effective_date,
+			t2.failure_date,
+			t2.update_time,
+			t2.update_user,
+			t2.attachment
+		FROM
+			tbl_sp_supplier t1
+		INNER JOIN tbl_sp_supplier_contract t2 ON (t1.id = t2.supplier_id)
+		WHERE t1.delete_flag = 1 AND t2.id = #{id, jdbcType=VARCHAR}	
+	</select>
+	
+	<insert id="insertContract" parameterType="com.yougou.merchant.api.supplier.vo.ContractVo">
+		INSERT INTO tbl_sp_supplier_contract (
+			id,
+			supplier_id,
+			contract_no,
+			clearing_form,
+			effective_date,
+			failure_date,
+			update_time,
+			update_user,
+			attachment
+		)
+		VALUES
+			(
+			#{id},
+			#{supplierId},
+			#{contractNo},
+			#{clearingForm},
+			#{effectiveDate},
+			#{failureDate},
+			#{updateTime},
+			#{updateUser},
+			#{attachment}
+			)
+	</insert>
+	
+	<update id="updateContract" parameterType="com.yougou.merchant.api.supplier.vo.ContractVo">
+		UPDATE tbl_sp_supplier_contract
+		SET 
+			supplier_id = #{supplierId},
+			contract_no = #{contractNo},
+			clearing_form = #{clearingForm},
+			effective_date = #{effectiveDate},
+			failure_date = #{failureDate},
+			update_time = #{updateTime},
+			update_user = #{updateUser},
+			attachment = #{attachment}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getSettlementType" resultType="map">
+		select sps.supplier_code,spc.clearing_form from tbl_sp_supplier_contract spc inner join tbl_sp_supplier sps 
+		on spc.supplier_id = sps.id where sps.supplier_code in 
+		<foreach collection="list" item="code" index="index" open="(" close=")" separator=",">
+			#{code}
+		</foreach>
+	    and spc.renew_flag in ('1','2')
+	</select>
+</mapper>

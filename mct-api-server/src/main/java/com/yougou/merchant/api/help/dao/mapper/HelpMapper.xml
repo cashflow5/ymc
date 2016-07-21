@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.help.dao.HelpMapper">
+    <!-- 联系人 -->
+    <resultMap id="helpMapper" type="com.yougou.merchant.api.help.vo.HelpCenterLog">    
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="menu_id" property="menuId" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="operator" property="operator" jdbcType="VARCHAR" />
+    </resultMap>
+	<resultMap type="com.yougou.merchant.api.help.vo.HelpCenterImg" id="imageMapper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="pic_name" property="picName" jdbcType="VARCHAR" />
+        <result column="created" property="created" jdbcType="TIMESTAMP" />
+        <result column="updated" property="updated" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap type="com.yougou.merchant.api.help.vo.HelpCenterMenu" id="menuMapper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="menu_name" property="menuName" jdbcType="VARCHAR" />
+        <result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+        <result column="sub_id" property="subId" jdbcType="VARCHAR" />
+        <result column="level" property="level" jdbcType="INTEGER" />
+        <result column="is_leaf" property="isLeaf" jdbcType="INTEGER" />
+        <result column="order_no" property="orderNo" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap type="com.yougou.merchant.api.help.vo.HelpCenterContent" id="contentMapper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="menu_id" property="menuId" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<insert id="insertHelpLog" parameterType="com.yougou.merchant.api.help.vo.HelpCenterLog">
+		INSERT INTO tbl_merchant_help_log (
+			id, menu_id,
+			content,
+			update_time,
+			operator
+		)
+		VALUES
+			(#{id}, #{menuId}, #{content}, #{updateTime}, #{operator})
+	</insert>
+	<insert id="insertHelpContent" parameterType="com.yougou.merchant.api.help.vo.HelpCenterContent">
+		INSERT INTO tbl_merchant_help_content (
+			id,
+			menu_id,
+			content
+		)
+		VALUES
+			(#{id}, #{menuId}, #{content})
+	</insert>
+	<insert id="insertHelpImg" parameterType="com.yougou.merchant.api.help.vo.HelpCenterImg">
+		INSERT INTO tbl_merchant_help_img (
+			id,
+			pic_name,
+			created,
+			updated
+		)
+		VALUES
+			(#{id}, #{picName}, #{created}, #{updated})
+	</insert>
+	<insert id="insertHelpMenu" parameterType="com.yougou.merchant.api.help.vo.HelpCenterMenu">
+		INSERT INTO tbl_merchant_help_menu (
+			id,
+			menu_name,
+			parent_id,
+			sub_id,
+			LEVEL,
+			is_leaf,
+			order_no
+		)
+		VALUES
+			(#{id}, #{menuName}, #{parentId}, #{subId}, #{level}, #{isLeaf}, #{orderNo})
+	</insert>
+	
+	<update id="updateHelpContent" parameterType="com.yougou.merchant.api.help.vo.HelpCenterContent">
+		update tbl_merchant_help_content 
+		SET 
+			<if test="menuId != null and menuId != ''">
+				menu_id = #{menuId, jdbcType=VARCHAR},
+			</if>
+			content = #{content, jdbcType=VARCHAR}
+		where id = #{id, jdbcType=VARCHAR}
+	</update>
+	<select id="getContentByMenuId" resultMap="contentMapper">
+		select id, menu_id, content from tbl_merchant_help_content t where t.menu_id = #{menuId, jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteHelpContentByMenuId">
+		delete from tbl_merchant_help_content where menu_id = #{menuId, jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="getHelpImageNameList" resultMap="imageMapper">
+		select id, pic_name, created, updated from tbl_merchant_help_img m order by m.created asc
+	</select>
+	<select id="getHelpMenuById" resultMap="menuMapper">
+		SELECT
+			id,
+			menu_name,
+			parent_id,
+			sub_id,
+			LEVEL,
+			is_leaf,
+			order_no
+		FROM
+			tbl_merchant_help_menu t
+		WHERE
+			t.id = #{id, jdbcType=VARCHAR}
+	</select>
+	<select id="getHelpMenuBySubId" resultMap="menuMapper">
+		SELECT
+			id,
+			menu_name,
+			parent_id,
+			sub_id,
+			LEVEL,
+			is_leaf,
+			order_no
+		FROM
+			tbl_merchant_help_menu t
+		WHERE
+			t.sub_id = #{subId, jdbcType=VARCHAR}
+	</select>
+	<select id="getHelpCenterMenuList" resultMap="menuMapper">
+		SELECT
+			id,
+			menu_name,
+			parent_id,
+			sub_id,
+			LEVEL,
+			is_leaf,
+			order_no
+		FROM
+			tbl_merchant_help_menu m order by m.level asc, m.order_no asc
+	</select>
+	
+	<select id="getHelpImageByName" resultMap="imageMapper">
+		select id, pic_name, created, updated from tbl_merchant_help_img m where m.pic_name = #{picName, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateHelpMenu" parameterType="com.yougou.merchant.api.help.vo.HelpCenterMenu">
+		update tbl_merchant_help_menu set 
+		menu_name = #{menuName, jdbcType=VARCHAR},
+		parent_id = #{parentId, jdbcType=VARCHAR},
+		sub_id = #{subId, jdbcType=VARCHAR},
+		LEVEL = #{level, jdbcType=INTEGER},
+		is_leaf = #{isLeaf, jdbcType=INTEGER},
+		order_no = #{orderNo, jdbcType=INTEGER}
+		where id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteHelpMenuById">
+		delete from tbl_merchant_help_menu where id = #{id, jdbcType=VARCHAR}
+	</delete>
+</mapper>

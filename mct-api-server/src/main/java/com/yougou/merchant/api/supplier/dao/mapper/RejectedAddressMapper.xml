@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.RejectedAddressMapper" >
+    <resultMap id="RejectedAddressColumnMapper" type="com.yougou.merchant.api.supplier.vo.RejectedAddressVo" >
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="supplier_code" property="supplierCode" jdbcType="VARCHAR" />
+        <result column="supplier_name" property="supplierName" jdbcType="VARCHAR" />
+        <result column="consignee_name" property="consigneeName" jdbcType="VARCHAR" />
+        <result column="consignee_phone" property="consigneePhone" jdbcType="VARCHAR" />
+        <result column="consignee_tell" property="consigneeTell" jdbcType="VARCHAR" />
+        <result column="warehouse_postcode" property="warehousePostcode" jdbcType="VARCHAR" />
+        <result column="warehouse_area" property="warehouseArea" jdbcType="VARCHAR" />
+        <result column="warehouse_adress" property="warehouseAdress" jdbcType="VARCHAR" />
+        <result column="creater_time" property="createrTime" jdbcType="VARCHAR" />
+        <result column="creater_person" property="createrPerson" jdbcType="VARCHAR" />
+    </resultMap>
+
+	<sql id="RejectedAddressColumnList">
+		id,
+		supplier_code,
+		supplier_name,
+		consignee_name,
+		consignee_phone,
+		consignee_tell,
+		warehouse_postcode,
+		warehouse_area,
+		warehouse_adress,
+		creater_time,
+		creater_person
+	</sql>
+    
+    <select id="getSupplierRejectedAddress" resultMap="RejectedAddressColumnMapper" parameterType="java.lang.String" >
+        select 
+        <include refid="RejectedAddressColumnList" />
+        from tbl_merchant_rejected_address
+        where supplier_code = #{merchantCode,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="getMerchantRejectedAddressList" resultMap="RejectedAddressColumnMapper" parameterType="com.yougou.merchant.api.supplier.vo.MerchantRejectedAddressVo" >
+        SELECT
+           t.id,
+           t.consignee_name,
+           t.consignee_phone,
+           t.consignee_tell,
+           t.creater_person,
+           t.creater_time,
+           t.supplier_code,
+           t.supplier_name,
+           t.warehouse_adress,
+           t.warehouse_area,
+           t.warehouse_postcode
+        FROM
+           tbl_merchant_rejected_address t
+		WHERE 1=1
+		<include refid="queryMerchantRejectedAddress_where"/>
+		order by t.creater_time desc
+    </select>
+    
+    <select id="getMerchantRejectedAddressListCount" resultType="int" parameterType="com.yougou.merchant.api.supplier.vo.MerchantRejectedAddressVo">
+    	SELECT
+			count(1) 
+		FROM
+			tbl_merchant_rejected_address t
+		WHERE 1=1
+		<include refid="queryMerchantRejectedAddress_where"/>
+    </select>
+    
+    <sql id="queryMerchantRejectedAddress_where">
+    	<if test="supplierName != null and supplierName != ''">
+			AND	t.supplierName = #{supplierName,jdbcType=VARCHAR}
+		</if>
+		<if test="supplierCode != null and supplierCode != ''">
+			AND t.supplierCode = #{supplierCode,jdbcType=VARCHAR}
+		</if>
+		<if test="consigneeName != null and consigneeName != ''">
+			AND t.consigneeName = #{consigneeName,jdbcType=VARCHAR}
+		</if>
+		<if test="consigneePhone != null and consigneePhone != ''">
+			AND t.consigneePhone = #{consigneePhone,jdbcType=VARCHAR}
+		</if>
+		<if test="consigneeTell != null and consigneeTell != ''">
+			AND t.consigneeTell = #{consigneeTell,jdbcType=VARCHAR}
+		</if>
+    </sql>
+    <select id="getMerchantRejectedAddressById" resultMap="RejectedAddressColumnMapper" parameterType="java.lang.String" >
+        SELECT
+           t.id,
+           t.consignee_name,
+           t.consignee_phone,
+           t.consignee_tell,
+           t.creater_person,
+           t.creater_time,
+           t.supplier_code,
+           t.supplier_name,
+           t.warehouse_adress,
+           t.warehouse_area,
+           t.warehouse_postcode
+        FROM
+           tbl_merchant_rejected_address t
+		WHERE t.id = #{id, jdbcType=VARCHAR}
+    </select>
+    <insert id="insertMerchantRejectedAddress" parameterType="com.yougou.merchant.api.supplier.vo.MerchantRejectedAddressVo">
+    	INSERT INTO tbl_merchant_rejected_address (
+			id,
+			supplier_name,
+			supplier_code,
+			consignee_name,
+			consignee_phone,
+			consignee_tell,
+			warehouse_postcode,
+			warehouse_area,
+			warehouse_adress,
+			creater_time,
+		    creater_person
+		)
+		VALUES
+			(
+			#{id},
+			#{supplierName},
+			#{supplierCode},
+			#{consigneeName},
+			#{consigneePhone},
+			#{consigneeTell},
+			#{warehousePostcode},
+			#{warehouseArea},
+			#{warehouseAdress},
+			#{createrTime},
+			#{createrPerson}
+			)
+    </insert>
+    <update id="updateMerchantRejectedAddress" parameterType="com.yougou.merchant.api.supplier.vo.MerchantRejectedAddressVo">
+    	UPDATE 
+    		tbl_merchant_rejected_address
+		SET 
+			<if test="supplierName != null and supplierName != ''">
+				supplier_name = #{supplierName, jdbcType=VARCHAR},
+			</if>
+			<if test="supplierCode != null and supplierCode != ''">
+				supplier_code = #{supplierCode, jdbcType=VARCHAR},
+			</if>
+			<if test="consigneeName != null and consigneeName != ''">
+				consignee_name = #{consigneeName, jdbcType=VARCHAR},
+			</if>
+			<if test="consigneePhone != null and consigneePhone != ''">
+				consignee_phone = #{consigneePhone, jdbcType=VARCHAR},
+			</if>
+			<if test="consigneeTell != null and consigneeTell != ''">
+				consignee_tell = #{consigneeTell, jdbcType=VARCHAR},
+			</if>
+			<if test="warehousePostcode != null and warehousePostcode != ''">
+				warehouse_postcode = #{warehousePostcode, jdbcType=VARCHAR},
+			</if>
+			<if test="warehouseArea != null and warehouseArea != ''">
+				warehouse_area = #{warehouseArea, jdbcType=VARCHAR},
+			</if>
+			<if test="warehouseAdress != null and warehouseAdress != ''">
+				warehouse_adress = #{warehouseAdress, jdbcType=VARCHAR}
+			</if>
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+    </update>
+    
+    <!-- 快递公司模板 -->
+    <resultMap type="com.yougou.merchant.api.supplier.vo.ExpressTemplate" id="expressTemplateMapper">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="express_name" property="expressName" jdbcType="VARCHAR" />
+        <result column="logistics_id" property="logisticsId" jdbcType="VARCHAR" />
+        <result column="width" property="width" jdbcType="DOUBLE" />
+        <result column="heigth" property="heigth" jdbcType="DOUBLE" />
+        <result column="font_size" property="fontSize" jdbcType="VARCHAR" />
+        <result column="is_bold" property="isBold" jdbcType="INTEGER" />
+        <result column="back_bround_image" property="backGroundImage" jdbcType="VARCHAR" />
+        
+        <result column="shipments_name" property="shipmentsName" jdbcType="VARCHAR" />
+        <result column="shipments_one_area" property="shipmentsOneArea" jdbcType="VARCHAR" />
+        <result column="shipments_two_area" property="shipmentsTwoArea" jdbcType="VARCHAR" />
+        <result column="shipments_three_area" property="shipmentsThreeArea" jdbcType="VARCHAR" />
+        <result column="shipments_adress" property="shipmentsAdress" jdbcType="VARCHAR" />
+        <result column="shipments_phone" property="shipmentsPhone" jdbcType="VARCHAR" />
+        <result column="shipments_tell" property="shipmentsTell" jdbcType="VARCHAR" />
+        <result column="shipments_email" property="shipmentsEmail" jdbcType="VARCHAR" />
+        
+        <result column="order_sub_no" property="orderSubNo" jdbcType="VARCHAR" />
+        <result column="consignee_name" property="consigneeName" jdbcType="VARCHAR" />
+        <result column="consignee_one_area" property="consigneeOneArea" jdbcType="VARCHAR" />
+        <result column="consignee_two_area" property="consigneeTwoArea" jdbcType="VARCHAR" />
+        <result column="consignee_three_area" property="consigneeThreeArea" jdbcType="VARCHAR" />
+        <result column="consignee_adress" property="consigneeAdress" jdbcType="VARCHAR" />
+        <result column="consignee_phone" property="consigneePhone" jdbcType="VARCHAR" />
+        <result column="consignee_tell" property="consigneeTell" jdbcType="VARCHAR" />
+        <result column="consignee_email" property="consigneeEmail" jdbcType="VARCHAR" />
+        <result column="consignee_year" property="consigneeYear" jdbcType="VARCHAR" />
+        <result column="consignee_month" property="consigneeMonth" jdbcType="VARCHAR" />
+        <result column="consignee_day" property="consigneeDay" jdbcType="VARCHAR" />
+        <result column="commodity_num" property="commodityNum" jdbcType="VARCHAR" />
+        
+        <result column="order_source_id" property="orderSourceId" jdbcType="VARCHAR" />
+        <result column="number" property="number" jdbcType="VARCHAR" />
+        <result column="money" property="money" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="tbody" property="tbody" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="queryExpressAllColumns">
+    		id,
+			express_name,
+			logistics_id,
+			width,
+			heigth,
+			back_bround_image,
+			shipments_name,
+			shipments_one_area,
+			shipments_two_area,
+			shipments_three_area,
+			shipments_adress,
+			shipments_phone,
+			shipments_tell,
+			shipments_email,
+			order_sub_no,
+			consignee_name,
+			consignee_one_area,
+			consignee_two_area,
+			consignee_three_area,
+			consignee_adress,
+			consignee_phone,
+			consignee_tell,
+			consignee_email,
+			consignee_year,
+			consignee_month,
+			consignee_day,
+			commodity_num,
+			order_source_id,
+			number,
+			money,
+			remark,
+			tbody,
+			font_size,
+			is_bold
+    </sql>
+    <insert id="insertExpressTemplate" parameterType="com.yougou.merchant.api.supplier.vo.ExpressTemplate">
+    	INSERT INTO tbl_merchant_express_template (
+			<include refid="queryExpressAllColumns"/>
+		)
+		VALUES
+			(
+			#{id},
+			#{expressName},
+			#{logisticsId},
+			#{width},
+			#{heigth},
+			#{backGroundImage},
+			#{shipmentsName},
+			#{shipmentsOneArea},
+			#{shipmentsTwoArea},
+			#{shipmentsThreeArea},
+			#{shipmentsAdress},
+			#{shipmentsPhone},
+			#{shipmentsTell},
+			#{shipmentsEmail},
+			#{orderSubNo},
+			#{consigneeName},
+			#{consigneeOneArea},
+			#{consigneeTwoArea},
+			#{consigneeThreeArea},
+			#{consigneeAdress},
+			#{consigneePhone},
+			#{consigneeTell},
+			#{consigneeEmail},
+			#{consigneeYear},
+			#{consigneeMonth},
+			#{consigneeDay},
+			#{commodityNum},
+			#{orderSourceId},
+			#{number},
+			#{money},
+			#{remark},
+			#{tbody},
+			#{fontSize},
+			#{isBold}
+			)
+    </insert>
+    <update id="updateExpressTemplate" parameterType="com.yougou.merchant.api.supplier.vo.ExpressTemplate">
+    	UPDATE tbl_merchant_express_template
+		SET 
+			width = #{width},
+			heigth = #{heigth},
+			back_bround_image = #{backGroundImage},
+		 	shipments_name = #{shipmentsName},
+		 	shipments_one_area = #{shipmentsOneArea},
+		 	shipments_two_area = #{shipmentsTwoArea},
+		 	shipments_three_area = #{shipmentsThreeArea},
+		 	shipments_adress = #{shipmentsAdress},
+		 	shipments_phone = #{shipmentsPhone},
+		 	shipments_tell = #{shipmentsTell},
+		 	shipments_email = #{shipmentsEmail},
+		 	order_sub_no = #{orderSubNo},
+		 	consignee_name = #{consigneeName},
+		 	consignee_one_area = #{consigneeOneArea},
+		 	consignee_two_area = #{consigneeTwoArea},
+		 	consignee_three_area = #{consigneeThreeArea},
+			consignee_adress = #{consigneeAdress},
+		 	consignee_phone = #{consigneePhone},
+		 	consignee_tell = #{consigneeTell},
+		 	consignee_email = #{consigneeEmail},
+		 	consignee_year = #{consigneeYear},
+		 	consignee_month = #{consigneeMonth},
+		 	consignee_day = #{consigneeDay},
+		 	commodity_num = #{commodityNum},
+		 	order_source_id = #{orderSourceId},
+		 	number = #{number},
+		 	money = #{money},
+		 	remark = #{remark},
+		 	tbody = #{tbody},
+		 	font_size = #{fontSize},
+		 	is_bold = #{isBold}
+		WHERE
+			logistics_id = #{logisticsId, jdbcType=VARCHAR}
+    </update>
+    <select id="getExpressTemplateById" resultMap="expressTemplateMapper" parameterType="java.lang.String">
+    	select <include refid="queryExpressAllColumns"/> from tbl_merchant_express_template t
+    	where t.logistics_id = #{id, jdbcType=VARCHAR}
+    </select>
+</mapper>

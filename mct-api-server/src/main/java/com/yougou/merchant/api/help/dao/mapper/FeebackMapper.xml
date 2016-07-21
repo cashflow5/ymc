@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.help.dao.FeebackMapper">
+    <!-- 意见反馈 -->
+    <resultMap id="feebackMapper" type="com.yougou.merchant.api.help.vo.Feeback">    
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
+        <result column="merchant_name" property="merchantName" jdbcType="VARCHAR" />
+        <result column="first_cate" property="firstCate" jdbcType="VARCHAR" />
+        <result column="second_cate" property="secondCate" jdbcType="VARCHAR" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="phone" property="phone" jdbcType="VARCHAR" />
+        <result column="is_reply" property="isReply" jdbcType="VARCHAR" />
+        <result column="is_read" property="isRead" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+	<resultMap type="com.yougou.merchant.api.help.vo.FeebackReply" id="feebackReplyMapper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="feeback_id" property="feebackId" jdbcType="VARCHAR" />
+        <result column="reply_content" property="replyContent" jdbcType="VARCHAR" />
+        <result column="reply_person" property="replyPerson" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="is_deleted" property="isDeleted" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="queryFeeback_all_columns">
+		id,
+			merchant_code,
+			merchant_name,
+			first_cate,
+			second_cate,
+			title,
+			content,
+			email,
+			phone,
+			is_reply,
+			is_read,
+			create_time,
+			update_time
+	</sql>
+	
+	<insert id="insertFeeback" parameterType="com.yougou.merchant.api.help.vo.Feeback">
+		INSERT INTO tbl_merchant_feeback (
+			<include refid="queryFeeback_all_columns"/>
+		)
+		VALUES
+			(
+			#{id},
+			#{merchantCode},
+			#{merchantName},
+			#{firstCate},
+			#{secondCate},
+			#{title},
+			#{content},
+			#{email},
+			#{phone},
+			#{isReply},
+			#{isRead},
+			#{createTime},
+			#{updateTime}
+			)
+	</insert>
+	
+	<sql id="queryFeeback_reply_all_columns">
+			id,
+			feeback_id,
+			reply_content,
+			reply_person,
+			create_time,
+			update_time,
+			is_deleted
+	</sql>
+	<insert id="insertFeebackReply" parameterType="com.yougou.merchant.api.help.vo.FeebackReply">
+		INSERT INTO tbl_merchant_feeback_reply (
+			<include refid="queryFeeback_reply_all_columns"/>
+		)
+		VALUES
+			(
+			#{id},
+			#{feebackId},
+			#{replyContent},
+			#{replyPerson},
+			#{createTime},
+			#{updateTime},
+			#{isDeleted}
+			)
+	</insert>
+	
+	<select id="queryFeebackListByVo" parameterType="com.yougou.merchant.api.help.vo.FeebackVo" resultMap="feebackMapper">
+		select 
+			<include refid="queryFeeback_all_columns"/>
+		from tbl_merchant_feeback f
+		where 1=1
+		<include refid="query_feeback_where"/>
+	</select>
+	<select id="queryFeebackCountByVo" resultType="int" parameterType="com.yougou.merchant.api.help.vo.FeebackVo">
+		select 
+			count(*)
+		from tbl_merchant_feeback f
+		where 1=1
+		<include refid="query_feeback_where"/>
+	</select>
+	
+	<sql id="query_feeback_where">
+		<if test="email != null and email != ''">
+			and f.email = #{email, jdbcType=VARCHAR}
+		</if>
+		<if test="merchantCode != null and merchantCode != ''">
+			and f.merchant_code = #{merchantCode, jdbcType=VARCHAR}
+		</if>
+		<if test="merchantName != null and merchantName != ''">
+			and f.merchant_name = #{merchantName, jdbcType=VARCHAR}
+		</if>
+		<if test="firstCate != null and firstCate != ''">
+			and f.first_cate = #{firstCate, jdbcType=VARCHAR}
+		</if>
+		<if test="secondCate != null and secondCate != ''">
+			and f.second_cate = #{secondCate, jdbcType=VARCHAR}
+		</if>
+		<if test="phone != null and phone != ''">
+			and f.phone = #{phone, jdbcType=VARCHAR}
+		</if>
+		<if test="isRead != null and isRead != ''">
+			and f.is_read = #{isRead, jdbcType=VARCHAR}
+		</if>
+		<if test="isReply != null and isReply != ''">
+			and f.is_reply = #{isReply, jdbcType=VARCHAR}
+		</if>
+		<if test="startCreateTime != null">
+		<![CDATA[	and f.create_time >= #{create_time, jdbcType=TIMESTAMP} ]]>
+		</if>
+		<if test="endCreateTime != null">
+		<![CDATA[	and f.create_time <= #{endCreateTime, jdbcType=TIMESTAMP} ]]>
+		</if>
+	</sql>
+	
+	<select id="getFeebackById" resultMap="feebackMapper">
+		select 
+			<include refid="queryFeeback_all_columns"/>
+		from tbl_merchant_feeback f
+		where f.id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateFeeback" parameterType="com.yougou.merchant.api.help.vo.Feeback">
+		UPDATE tbl_merchant_feeback
+		SET merchant_code = #{merchantCode}, 
+			merchant_name = #{merchantName}, 
+			first_cate = #{firstCate}, 
+			second_cate = #{secondCate}, 
+			title = #{title}, 
+			content = #{content}, 
+			email = #{email}, 
+			phone = #{phone}, 
+			is_reply = #{isReply}, 
+			is_read = #{isRead}, 
+			update_time = #{updateTime}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getFeebackReplyById" resultMap="feebackReplyMapper" parameterType="java.lang.String">
+		select 
+			<include refid="queryFeeback_reply_all_columns"/>
+		from tbl_merchant_feeback_reply r
+		where r.feeback_id = #{feebackId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateFeebackReply" parameterType="com.yougou.merchant.api.help.vo.FeebackReply">
+		UPDATE tbl_merchant_feeback_reply
+		SET feeback_id = #{feebackId}, 
+			reply_content = #{replyContent}, 
+			reply_person = #{replyPerson}, 
+			update_time = #{updateTime}, 
+			is_deleted = #{isDeleted}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+</mapper>

@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.order.dao.MerchantOrderMapper">
+
+	<resultMap id="OrderSubForDetailMap" type="com.yougou.ordercenter.model.order.OrderSub">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="order_main_id" property="orderMainId" jdbcType="VARCHAR" />
+		<result column="buy_id" property="buyId" jdbcType="VARCHAR" />
+		<result column="consignee_id" property="consigneeId" jdbcType="VARCHAR" />
+		<result column="invoice_id" property="invoiceId" jdbcType="VARCHAR" />
+		<result column="order_sub_no" property="orderSubNo" jdbcType="VARCHAR" />
+		<result column="order_main_no" property="orderMainNo" jdbcType="VARCHAR" />
+		<result column="giving_scores" property="givingScores"
+			jdbcType="INTEGER" />
+		<result column="discount_amount" property="discountAmount"
+			jdbcType="DOUBLE" />
+		<result column="active_name" property="activeName" jdbcType="VARCHAR" />
+		<result column="original_order_no" property="originalOrderNo"
+			jdbcType="VARCHAR" />
+		<result column="modity_date" property="modityDate" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="order_timestamp" property="orderTimestamp"
+			jdbcType="BIGINT" />
+		<result column="total_price" property="totalPrice" jdbcType="DOUBLE" />
+		<result column="pay_status" property="payStatus" jdbcType="INTEGER" />
+		<result column="delivery_status" property="deliveryStatus"
+			jdbcType="INTEGER" />
+		<result column="base_status" property="baseStatus" jdbcType="INTEGER" />
+		<result column="lock_user" property="lockUser" jdbcType="VARCHAR" />
+		<result column="is_bill" property="isBill" jdbcType="INTEGER" />
+		<result column="is_exception" property="isException" jdbcType="INTEGER" />
+		<result column="refund_amount" property="refundAmount"
+			jdbcType="DOUBLE" />
+		<result column="warehouse_code" property="warehouseCode"
+			jdbcType="VARCHAR" />
+		<result column="product_total_price" property="productTotalPrice"
+			jdbcType="DOUBLE" />
+		<result column="product_total_quantity" property="productTotalQuantity"
+			jdbcType="INTEGER" />
+		<result column="product_weight" property="productWeight"
+			jdbcType="DOUBLE" />
+		<result column="product_weight_unit" property="productWeightUnit"
+			jdbcType="INTEGER" />
+		<result column="del_flag" property="delFlag" jdbcType="SMALLINT" />
+		<result column="split_flag" property="splitFlag" jdbcType="SMALLINT" />
+		<result column="payment" property="payment" jdbcType="VARCHAR" />
+		<result column="return_goods_status" property="returnGoodsStatus"
+			jdbcType="INTEGER" />
+		<result column="apportion_status" property="apportionStatus"
+			jdbcType="INTEGER" />
+		<result column="order_flag" property="orderFlag" jdbcType="INTEGER" />
+		<result column="union_trace_code" property="unionTraceCode"
+			jdbcType="VARCHAR" />
+		<result column="suspend_type" property="suspendType" jdbcType="INTEGER" />
+		<result column="message" property="message" jdbcType="VARCHAR" />
+		<result column="pay_total_price" property="payTotalPrice"
+			jdbcType="DOUBLE" />
+		<result column="is_derived" property="isDerived" jdbcType="INTEGER" />
+		<result column="warehouse_delivery_status" property="warehouseDeliveryStatus"
+			jdbcType="INTEGER" />
+		<result column="send_or_pay_timestamp" property="sendOrPayTimestamp"
+			jdbcType="BIGINT" />
+		<result column="express_order_id" property="expressOrderId"
+			jdbcType="VARCHAR" />
+		<result column="logistics_name" property="logisticsName"
+			jdbcType="VARCHAR" />
+		<result column="order_pay_total_amont" property="orderPayTotalAmont"
+			jdbcType="DOUBLE" />
+		<result column="logistics_code" property="logisticsCode"
+			jdbcType="VARCHAR" />
+		<result column="product_send_quantity" property="productSendQuantity"
+			jdbcType="INTEGER" />
+		<result column="off_pay_timestamp" property="offPayTimestamp"
+			jdbcType="BIGINT" />
+		<result column="online_pay_amount" property="onlinePayAmount"
+			jdbcType="DOUBLE" />
+		<result column="online_payment" property="onlinePayment"
+			jdbcType="VARCHAR" />
+		<result column="active_pref_amount" property="activePrefAmount"
+			jdbcType="DOUBLE" />
+		<result column="member_pref_amount" property="memberPrefAmount"
+			jdbcType="DOUBLE" />
+		<result column="coupon_pref_amount" property="couponPrefAmount"
+			jdbcType="DOUBLE" />
+		<result column="coupon_pref_amount5" property="couponPrefAmount5"
+			jdbcType="DOUBLE" />
+		<result column="is_sync" property="isSync" jdbcType="SMALLINT" />
+		<result column="temp_sale_amount" property="tempSaleAmount"
+			jdbcType="DOUBLE" />
+		<result column="client_ip" property="clientIp" jdbcType="VARCHAR" />
+		<result column="out_order_id" property="outOrderId" jdbcType="VARCHAR" />
+		<result column="out_shop_name" property="outShopName" jdbcType="VARCHAR" />
+		<result column="client_sign" property="clientSign" jdbcType="VARCHAR" />
+		<result column="cod" property="cod" jdbcType="VARCHAR" />
+		<result column="order_sync_time" property="orderSyncTime"
+			jdbcType="TIMESTAMP" />
+		<result column="online_pay_time" property="onlinePayTime"
+			jdbcType="TIMESTAMP" />
+		<result column="verify_user" property="verifyUser" jdbcType="VARCHAR" />
+		<result column="verify_time" property="verifyTime" jdbcType="TIMESTAMP" />
+		<!-- <result column="order_source_id" property="orderSourceId" jdbcType="VARCHAR" 
+			/> -->
+		<result column="should_postage" property="shouldPostage"
+			jdbcType="DOUBLE" />
+		<result column="actual_postage" property="actualPostage"
+			jdbcType="DOUBLE" />
+		<result column="payment_pref_amount" property="paymentPrefAmount"
+			jdbcType="DOUBLE" />
+		<result column="buy_reduction_pref_amount" property="buyReductionPrefAmount"
+			jdbcType="DOUBLE" />
+		<result column="is_postage_free" property="isPostageFree"
+			jdbcType="INTEGER" />
+		<result column="coupon_id" property="couponId" jdbcType="VARCHAR" />
+		<result column="globle_pref_amount" property="globlePrefAmount"
+			jdbcType="DOUBLE" />
+		<result column="print_pref_amount" property="printPrefAmount"
+			jdbcType="DOUBLE" />
+		<result column="print_order_amount" property="printOrderAmount"
+			jdbcType="DOUBLE" />
+		<result column="ship_time" property="shipTime" jdbcType="TIMESTAMP" />
+		<result column="settle_type" property="settleType" jdbcType="SMALLINT" />
+		<result column="integral_pref_amount" property="integralPrefAmount"
+			jdbcType="DOUBLE" />
+		<result column="has_refund" property="hasRefund" jdbcType="INTEGER" />
+		<result column="order_source_no" property="orderSourceNo"
+			jdbcType="VARCHAR" />
+		<result column="buy_reduction_pref_amount" property="buyReductionPrefAmount"
+			jdbcType="DOUBLE" />
+		
+		<!-- 唯品会JIT拣货单号 add by zf 2016.7.9 -->	
+		<result column="package_no" property="packageNo"
+			jdbcType="VARCHAR" />
+				
+		<collection property="orderDetail4subs" javaType="ArrayList"
+			column="id" ofType="orderDetail4sub"
+			select="getOrderDetailsListByOrderSubId" />
+		<collection property="orderBuyInfo" column="buy_id" ofType="orderBuyInfo"
+			select="findByOrderBuyInfoId" />
+	</resultMap>
+
+	<select id="queryMerchantOrderCount" parameterType="map"
+		resultType="java.lang.Integer">
+		select
+		count(DISTINCT a.id)
+		from
+		tbl_order_sub a, tbl_order_sub_expand b,
+		tbl_order_consignee_info c,
+		tbl_order_detail4sub d
+		WHERE
+		a.id =
+		b.order_sub_id
+		and a.consignee_id=c.id
+		and a.id = d.order_sub_id
+		<if test="order_status != 4 "> AND a.warehouse_code = #{merchant_warehouse_code} </if>
+		and b.merchant_code = #{merchant_code}
+		AND a.del_flag = 1 and a.is_paid=2
+		<if test="order_status != 4 ">AND a.is_exception = 0 </if>
+		<if test="payment !=null and payment != '' "> AND a.payment = #{payment}</if>
+		<if test="order_main_no !=null and order_main_no != '' "> AND a.order_main_no = #{order_main_no} </if>
+		<if test="order_sub_no !=null and order_sub_no != '' "> AND a.order_sub_no = #{order_sub_no}</if>
+		
+		<if test="merchant_code == 'SP20160523229447'">
+			<if test="start_created !=null and start_created != '' ">  <![CDATA[AND a.op_timestamp > #{start_created}]]></if>
+			<if test="end_created !=null and end_created != '' ">  <![CDATA[AND a.op_timestamp < #{end_created} ]]></if>
+		</if>
+		<if test="merchant_code != 'SP20160523229447'">
+			<if test="start_created !=null and start_created != '' ">  <![CDATA[AND a.create_time > #{start_created}]]></if>
+			<if test="end_created !=null and end_created != '' ">  <![CDATA[AND a.create_time < #{end_created} ]]></if>
+		</if>
+
+		<if test="start_posted !=null and start_posted != '' ">  <![CDATA[and a.ship_time > #{start_posted} ]]></if>
+		<if test="end_posted !=null and end_posted != '' ">  <![CDATA[and a.ship_time < #{end_posted} ]]></if>
+		<if test="logistics_code !=null and logistics_code != '' ">  <![CDATA[AND a.logistics_code = #{logistics_code} ]]></if>
+		<if test="start_modified !=null and start_modified != '' ">  <![CDATA[and a.order_timestamp > #{start_modified} ]]></if>
+		<if test="end_modified !=null and end_modified != '' ">  <![CDATA[and a.order_timestamp < #{end_modified} ]]></if>
+		<if test="order_status == 1 "> and a.base_status = 2 </if>
+		<if test="order_status == 2 "> and a.base_status = 4 </if>
+		<if test="order_status == 3 "> and a.base_status in ('6', '7') </if>
+		<if test="order_status == 4 "> and a.is_exception = 10 </if>
+		<if test="delivery_date !=null and deliveryDate != '' "> and c.delivery_date = #{deliveryDate}</if>
+		<if test="user_name !=null and user_name != '' "> AND c.user_name = #{consignee_name}</if>
+		<if test="commodity_no !=null and commodity_no != '' "> AND d.commodity_no = #{commodity_no} </if>
+		<if test="prod_no !=null and prod_no != '' "> AND d.prod_no = #{product_no} </if>
+		ORDER BY a.order_timestamp desc
+	</select>
+
+	<select id="selectMerchantCancleSaleOrder" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		select
+		t1.order_sub_no,t1.modity_date,t1.original_order_no,
+		t1.order_main_no,t1.pay_status,t1.base_status
+		from
+		tbl_order_sub t1,
+		tbl_order_sub_expand t2
+		where
+		t1.id = t2.order_sub_id
+		and t1.is_exception
+		=0
+		and t2.merchant_code =#{merchantCode}
+		and t1.del_flag=1
+		and
+		(t1.base_status= 6 or t1.base_status= 7)  
+			<![CDATA[
+			and t1.create_time >= #{startTime} 
+			and t1.create_time <= #{endTime} ;
+			]]>
+	</select>
+
+	<select id="selectMerchantOrderList" parameterType="map"
+		resultMap="OrderSubForDetailMap">
+		select
+		DISTINCT a.*
+		from
+		tbl_order_sub a, tbl_order_sub_expand b,
+		tbl_order_consignee_info c
+		WHERE
+		a.id = b.order_sub_id
+		and
+		a.consignee_id=c.id
+		and b.merchant_code = #{merchant_code}
+		<if test="order_sub_no !=null and order_sub_no != '' "> AND a.order_sub_no = #{order_sub_no}</if>
+		<if test="order_status == 1 "> and a.base_status = 2 </if>
+		<if test="order_status == 2 "> and a.base_status = 4 </if>
+		<if test="order_status == 3 "> and a.base_status in ('6', '7') </if>
+		<if test="order_status != 1 and order_status != 2 and order_status != 3 "> and a.base_status in ('2','4','6', '7') </if>
+		<if test="delivery_date !=null and deliveryDate != '' "> and c.delivery_date = #{deliveryDate}</if>
+		ORDER BY a.order_timestamp desc
+	</select>
+	<select id="queryMerchantOrderList" parameterType="map"
+		resultMap="OrderSubForDetailMap">
+		select
+		DISTINCT a.*
+		from
+		tbl_order_sub a, tbl_order_sub_expand b
+		<if
+			test="(delivery_date !=null and deliveryDate != '') or (user_name !=null and user_name != '')">
+			, tbl_order_consignee_info c
+		</if>
+		<if
+			test="(commodity_no !=null and commodity_no != '') or (prod_no !=null and prod_no != '')">
+			, tbl_order_detail4sub d
+		</if>
+		WHERE
+		a.id = b.order_sub_id
+		<if
+			test="(delivery_date !=null and deliveryDate != '') or (user_name !=null and user_name != '')">
+			and a.consignee_id=c.id
+		</if>
+		<if
+			test="(commodity_no !=null and commodity_no != '') or (prod_no !=null and prod_no != '')">
+			and a.id = d.order_sub_id
+		</if>
+		<if test="order_status != 4 "> AND a.warehouse_code = #{merchant_warehouse_code} </if>
+		and b.merchant_code = #{merchant_code}
+		AND a.del_flag = 1 and a.is_paid=2
+		<if test="order_status != 4 "> AND a.is_exception = 0 </if>
+		<if test="payment !=null and payment != '' "> AND a.payment = #{payment}</if>
+		<if test="order_main_no !=null and order_main_no != '' "> AND a.order_main_no = #{order_main_no} </if>
+		<if test="order_sub_no !=null and order_sub_no != '' "> AND a.order_sub_no = #{order_sub_no}</if>
+		
+		<if test="merchant_code == 'SP20160523229447'">
+			<if test="start_created !=null and start_created != '' ">  <![CDATA[AND a.op_timestamp > #{start_created}]]></if>
+			<if test="end_created !=null and end_created != '' ">  <![CDATA[AND a.op_timestamp < #{end_created} ]]></if>
+		</if>
+		<if test="merchant_code != 'SP20160523229447'">
+			<if test="start_created !=null and start_created != '' ">  <![CDATA[AND a.create_time > #{start_created}]]></if>
+			<if test="end_created !=null and end_created != '' ">  <![CDATA[AND a.create_time < #{end_created} ]]></if>
+		</if>
+
+		<if test="start_posted !=null and start_posted != '' ">  <![CDATA[and a.ship_time > #{start_posted} ]]></if>
+		<if test="end_posted !=null and end_posted != '' ">  <![CDATA[and a.ship_time < #{end_posted} ]]></if>
+		<if test="logistics_code !=null and logistics_code != '' ">  <![CDATA[AND a.logistics_code = #{logistics_code} ]]></if>
+		<if test="start_modified !=null and start_modified != '' ">  <![CDATA[and a.order_timestamp > #{start_modified} ]]></if>
+		<if test="end_modified !=null and end_modified != '' ">  <![CDATA[and a.order_timestamp < #{end_modified} ]]></if>
+		<if test="order_status == 1 "> and a.base_status = 2 </if>
+		<if test="order_status == 2 "> and a.base_status = 4 </if>
+		<if test="order_status == 3 "> and a.base_status in ('6', '7') </if>
+		<if test="order_status == 4 "> and a.is_exception = 10 </if>
+		<if test="delivery_date !=null and deliveryDate != '' "> and c.delivery_date = #{deliveryDate}</if>
+		<if test="user_name !=null and user_name != '' "> AND c.user_name = #{consignee_name}</if>
+		<if test="commodity_no !=null and commodity_no != '' "> AND d.commodity_no = #{commodity_no} </if>
+		<if test="prod_no !=null and prod_no != '' "> AND d.prod_no = #{product_no} </if>
+		ORDER BY a.order_timestamp desc
+	</select>
+
+	<!-- IOrderSubExpandDao -->
+	<resultMap id="OrderSubExpandMap" type="com.yougou.ordercenter.model.order.OrderSubExpand" >
+         <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="order_sub_id" property="orderSubId" jdbcType="VARCHAR" />
+        <result column="order_distribution_side" property="orderDistributionSide" jdbcType="INTEGER" />
+        <result column="order_exported_status" property="orderExportedStatus" jdbcType="INTEGER" />
+        <result column="exported_date" property="exportedDate" jdbcType="TIMESTAMP" />
+        <result column="stocking_date" property="stockingDate" jdbcType="TIMESTAMP" />
+        <result column="backorder_date" property="backorderDate" jdbcType="TIMESTAMP" />
+        <result column="backup_no" property="backupNo" jdbcType="VARCHAR" />
+        <result column="channel_no" property="channelNo" jdbcType="VARCHAR" />
+        <result column="reject_time" property="rejectTime" jdbcType="TIMESTAMP" />
+        <result column="cancel_type" property="cancelType" jdbcType="INTEGER" />
+        <result column="cancel_reason" property="cancelReason" jdbcType="VARCHAR" />
+        <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
+        <result column="order_printed_status" property="orderPrintedStatus" jdbcType="INTEGER" />
+        <result column="print_shoppinglist_count" property="printShoppinglistCount" jdbcType="INTEGER" />
+        <result column="print_logisticslist_count" property="printLogisticslistCount" jdbcType="INTEGER" />
+        <result column="is_part_deliver" property="isPartDeliver" jdbcType="INTEGER" />
+        <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+        <result column="postage_on_delivery" property="postageOnDelivery" jdbcType="INTEGER" />
+        <!-- 天猫预售增加字段 -->
+        <result column="pre_sale_order" property="isFromPreSale" jdbcType="INTEGER" />
+        <result column="earnest_money" property="frontPayment" jdbcType="DOUBLE" />
+        <result column="earnest_money_date" property="frontPayDate" jdbcType="TIMESTAMP" />
+        <result column="balance_due_date" property="balanceDueDate" jdbcType="TIMESTAMP" />
+        <result column="default_delivery_date" property="preSaleSendDate" jdbcType="TIMESTAMP" />
+        <result column="fx_name" property="fxName" jdbcType="VARCHAR" />
+        <!-- 发票随包裹发送 -->
+        <result column="invoice_follow_order" property="invoiceFollowOrder" jdbcType="INTEGER"/>
+    </resultMap>
+	<sql id="OrderSubExpand_Base_Column_List">
+		id,
+		order_sub_id,
+		order_distribution_side,
+		order_exported_status,
+		exported_date,
+		stocking_date,
+		backorder_date,
+		backup_no,
+		channel_no,
+		reject_time,
+		cancel_type,
+		cancel_reason,
+		merchant_code,
+		order_printed_status,
+		print_shoppinglist_count,
+		print_logisticslist_count,is_part_deliver,insert_time,postage_on_delivery
+		<!-- 天猫预售系统增加字段 -->
+		,pre_sale_order,earnest_money,earnest_money_date,balance_due_date,default_delivery_date,fx_name
+		<!-- 发票随包裹发送 -->
+		,invoice_follow_order
+	</sql>
+	<select id="findOrderSubExpandByOrderSubId" resultMap="OrderSubExpandMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="OrderSubExpand_Base_Column_List" />
+		from tbl_order_sub_expand
+		where order_sub_id = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getOrderSubExpandByOrderSubIds" resultMap="OrderSubExpandMap"
+		parameterType="map">
+		select
+		<include refid="OrderSubExpand_Base_Column_List" />
+		from tbl_order_sub_expand
+		where order_sub_id in
+		<foreach item="orderSubIdList" index="index" collection="orderSubIdList"
+			open="(" separator="," close=")">
+			#{orderSubIdList}
+		</foreach>
+	</select>
+
+	<!-- IOrderBuyInfoDao -->
+	<resultMap id="OrderBuyInfoMap" type="com.yougou.ordercenter.model.order.OrderBuyInfo">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="real_name" property="realName" jdbcType="VARCHAR" />
+		<result column="member_name" property="memberName" jdbcType="VARCHAR" />
+		<result column="constact_phone" property="constactPhone"
+			jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="area" property="area" jdbcType="VARCHAR" />
+		<result column="zip_code" property="zipCode" jdbcType="VARCHAR" />
+		<result column="buy_address" property="buyAddress" jdbcType="VARCHAR" />
+		<result column="province" property="province" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="del_flag" property="delFlag" jdbcType="SMALLINT" />
+		<result column="split_flag" property="splitFlag" jdbcType="SMALLINT" />
+		<result column="buy_no" property="buyNo" jdbcType="VARCHAR" />
+		<result column="order_main_no" property="orderMainNo" jdbcType="VARCHAR" />
+		<result column="loginaccount_id" property="loginaccountId"
+			jdbcType="VARCHAR" />
+		<result column="attention" property="attention" jdbcType="INTEGER" />
+		<result column="member_ship" property="memberShip" jdbcType="VARCHAR" />
+		<result column="user_order_no" property="userOrderNo" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="BuyInfo_Base_Column_List">
+		id, real_name, member_name, constact_phone, email, area,
+		zip_code,
+		buy_address, province,
+		city, del_flag, split_flag, buy_no,
+		order_main_no, loginaccount_id,
+		attention,member_ship, user_order_no
+	</sql>
+	<select id="findByOrderBuyInfoId" resultMap="OrderBuyInfoMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="BuyInfo_Base_Column_List" />
+		from tbl_order_buy_info
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="getOrderBuyInfoByIds" resultMap="OrderBuyInfoMap"
+		parameterType="map">
+		select
+		<include refid="BuyInfo_Base_Column_List" />
+		from tbl_order_buy_info
+		where id in
+		<foreach item="orderBuyInfoId" index="index" collection="orderBuyInfoIdList"
+			open="(" separator="," close=")">
+			#{orderBuyInfoId}
+		</foreach>
+	</select>
+
+	<!-- IOrderConsigneeInfoDao -->
+	<resultMap id="OrderConsigneeInfoMap" type="com.yougou.ordercenter.model.order.OrderConsigneeInfo">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="constact_phone" property="constactPhone"
+			jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="mobile_phone" property="mobilePhone" jdbcType="VARCHAR" />
+		<result column="delivery_date" property="deliveryDate"
+			jdbcType="VARCHAR" />
+		<result column="zip_code" property="zipCode" jdbcType="VARCHAR" />
+		<result column="area" property="area" jdbcType="VARCHAR" />
+		<result column="area_name" property="areaName" jdbcType="VARCHAR" />
+		<result column="consignee_address" property="consigneeAddress"
+			jdbcType="VARCHAR" />
+		<result column="province" property="province" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="ship_method" property="shipMethod" jdbcType="INTEGER" />
+		<result column="is_urgent" property="isUrgent" jdbcType="INTEGER" />
+		<result column="delivery_costs" property="deliveryCosts"
+			jdbcType="DOUBLE" />
+		<result column="del_flag" property="delFlag" jdbcType="SMALLINT" />
+		<result column="split_flag" property="splitFlag" jdbcType="SMALLINT" />
+		<result column="consignee_no" property="consigneeNo" jdbcType="VARCHAR" />
+		<result column="order_main_no" property="orderMainNo" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Consignee_Base_Column_List">
+		id, user_name, constact_phone, email, mobile_phone,
+		delivery_date,
+		zip_code, area, area_name,
+		consignee_address, province,
+		city, ship_method, is_urgent, delivery_costs, del_flag,
+		split_flag,
+		consignee_no, order_main_no
+	</sql>
+	<select id="findByOrderConsigneeInfoId" resultMap="OrderConsigneeInfoMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Consignee_Base_Column_List" />
+		from tbl_order_consignee_info
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="getOrderConsigneeInfoByIds" resultMap="OrderConsigneeInfoMap"
+		parameterType="map">
+		select
+		<include refid="Consignee_Base_Column_List" />
+		from tbl_order_consignee_info
+		where id in
+		<foreach item="orderConsigneeInfoId" index="index"
+			collection="orderConsigneeInfoIdList" open="(" separator="," close=")">
+			#{orderConsigneeInfoId}
+		</foreach>
+	</select>
+	
+	<!-- 获取子订单明细 根据子订单id -->
+	<resultMap id="OrderDetail4subMap" type="com.yougou.ordercenter.model.order.OrderDetail4sub">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="commodity_id" property="commodityId" jdbcType="VARCHAR" />
+		<result column="commodity_no" property="commodityNo" jdbcType="VARCHAR" />
+		<result column="order_sub_id" property="orderSubId" jdbcType="VARCHAR" />
+		<result column="order_main_no" property="orderMainNo" jdbcType="VARCHAR" />
+		<result column="prod_no" property="prodNo" jdbcType="VARCHAR" />
+		<result column="prod_name" property="prodName" jdbcType="VARCHAR" />
+		<result column="prod_type" property="prodType" jdbcType="VARCHAR" />
+		<result column="commodity_specification_str" property="commoditySpecificationStr" jdbcType="VARCHAR" />
+		<result column="commodity_num" property="commodityNum" jdbcType="INTEGER" />
+		<result column="commodity_weight" property="commodityWeight" jdbcType="DOUBLE" />
+		<result column="prod_total_amt" property="prodTotalAmt" jdbcType="DOUBLE" />
+		<result column="commodity_image" property="commodityImage" jdbcType="VARCHAR" />
+		<result column="split_flag" property="splitFlag" jdbcType="SMALLINT" />
+		<result column="del_flag" property="delFlag" jdbcType="SMALLINT" />
+		<result column="sub_detail_no" property="subDetailNo" jdbcType="VARCHAR" />
+		<result column="prod_status" property="prodStatus" jdbcType="INTEGER" />
+		<result column="prod_discount_amount" property="prodDiscountAmount" jdbcType="DOUBLE" />
+		<result column="prod_unit_price" property="prodUnitPrice" jdbcType="DOUBLE" />
+		<result column="apply_refund_no" property="applyRefundNo" jdbcType="VARCHAR" />
+		<result column="level_code" property="levelCode" jdbcType="VARCHAR" />
+		<result column="usable_num" property="usableNum" jdbcType="INTEGER" />
+		<result column="gift_info" property="giftInfo" jdbcType="VARCHAR" />
+		<result column="active_name" property="activeName" jdbcType="VARCHAR" />
+		<result column="discount_number" property="discountNumber" jdbcType="INTEGER" />
+		<result column="discount_no" property="discountNo" jdbcType="VARCHAR" />
+		<result column="giving_scores" property="givingScores" jdbcType="INTEGER" />
+		<result column="active_id" property="activeId" jdbcType="VARCHAR" />
+		<result column="active_type" property="activeType" jdbcType="SMALLINT" />
+		<result column="commodity_type" property="commodityType" jdbcType="INTEGER" />
+		<result column="active_pref_amount" property="activePrefAmount" jdbcType="DOUBLE" />
+		<result column="member_pref_amount" property="memberPrefAmount" jdbcType="DOUBLE" />
+		<result column="coupon_pref_amount" property="couponPrefAmount" jdbcType="DOUBLE" />
+		<result column="temp_sale_amount" property="tempSaleAmount" jdbcType="DOUBLE" />
+		<result column="sale_price" property="salePrice" jdbcType="DOUBLE" />
+		<result column="active_price" property="activePrice" jdbcType="DOUBLE" />
+		<result column="payment_pref_amount" property="paymentPrefAmount" jdbcType="DOUBLE" />
+		<result column="buy_reduction_pref_amount" property="buyReductionPrefAmount" jdbcType="DOUBLE" />
+		<result column="postage_cost" property="postageCost" jdbcType="DOUBLE" />
+		<result column="globle_pref_amount" property="globlePrefAmount" jdbcType="DOUBLE" />
+		<result column="print_price" property="printPrice" jdbcType="DOUBLE" />
+		<result column="integral_pref_amount" property="integralPrefAmount" jdbcType="DOUBLE" />
+		<result column="coupon_pref_amount5" property="couponPrefAmount5" jdbcType="DOUBLE" />
+		<result column="merchant_code" property="merchantCode"/>	
+		<result column="pay_amount_by_cost" property="payAmountByCost"/>	
+		<result column="site_no" property="siteNo"/>	
+		<result column="is_use_coupon" property="isUseCoupon"/>	
+		<result column="consume_integral" property="consumeIntegral" jdbcType="INTEGER"/>
+	</resultMap>
+
+	<sql id="OrderDetails_Base_Column_List">
+		id, commodity_id, commodity_no, order_sub_id,
+		order_main_no, prod_no,
+		prod_name,
+		prod_type,
+		commodity_specification_str, commodity_num, commodity_weight,
+		prod_total_amt,
+		commodity_image, split_flag, del_flag, sub_detail_no,
+		prod_status,
+		prod_discount_amount,
+		prod_unit_price, apply_refund_no,
+		level_code, usable_num, gift_info, active_name,
+		discount_number,
+		discount_no, giving_scores, active_id, active_type,
+		commodity_type,
+		active_pref_amount, member_pref_amount, coupon_pref_amount,
+		temp_sale_amount, sale_price,
+		active_price,
+		payment_pref_amount,buy_reduction_pref_amount,postage_cost,
+		globle_pref_amount,print_price,integral_pref_amount,coupon_pref_amount5,merchant_code,pay_amount_by_cost,
+		site_no,is_use_coupon,
+		consume_integral
+	</sql>
+	<select id="getOrderDetailsListByOrderSubId" resultMap="OrderDetail4subMap" parameterType="java.lang.String">
+		select
+		<include refid="OrderDetails_Base_Column_List" />
+		from tbl_order_detail4sub t where t.order_sub_id=#{value} limit 2000
+	</select>
+	
+    <resultMap id="AbnormalSaleApplyMap" type="com.yougou.merchant.api.order.vo.QueryAbnormalSaleApplyVo">
+		<result column="order_sub_no" property="orderNo" jdbcType="VARCHAR" />
+		<result column="apply_no" property="applyNo" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="mobile_phone" property="mobilePhone" jdbcType="VARCHAR" />
+		<result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
+		<result column="supplier" property="merchantName" jdbcType="VARCHAR" />
+		<result column="exceptionType" property="exceptionType" jdbcType="VARCHAR" />
+		<result column="createor" property="creator" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="auditTime" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="brand_name" property="brandName" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getAbnormalSaleApplyList" parameterType="com.yougou.merchant.api.order.vo.QueryAbnormalSaleApplyVo" resultMap="AbnormalSaleApplyMap">
+		select t1.order_sub_no,t2.apply_no,t2.create_time,t2.status,t2.mobile_phone,t4.merchant_code,t5.supplier,t3.exceptionType,t2.createor,t2.update_time,t3.auditTime,t7.brand_name from tbl_order_sale_apply_bill t2
+		INNER JOIN tbl_order_sub t1 on(t1.order_sub_no = t2.order_no)
+		INNER JOIN tbl_order_sale_apply_abnormal_detail t3 on(t3.apply_id = t2.id)
+		INNER JOIN tbl_order_sub_expand t4 on(t4.order_sub_id = t1.id )
+		INNER JOIN tbl_sp_supplier t5 on(t5.supplier_code = t4.merchant_code)
+        INNER JOIN tbl_order_cancel_goods_info t6 on(t6.apply_id = t2.id )
+        INNER JOIN tbl_commodity_style t7 on(t7.id = t6.commodity_id )
+		Where 1=1
+		<include refid="getAbnormalSaleApplyList_where" />
+		 order by t2.create_time desc
+	</select>
+    <sql id="getAbnormalSaleApplyList_where">
+		<if test="orderNo != null and orderNo != ''">
+		    and t1.order_sub_no = #{orderNo,jdbcType=VARCHAR}
+		</if>
+		<if test="applyNo != null and applyNo != ''">
+		    and t2.apply_no = #{applyNo,jdbcType=VARCHAR}
+		</if>
+		<if test="merchantCode != null and merchantCode != ''">
+		    and t4.merchant_code = #{merchantCode,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null and status != ''">
+		    and t2.status = #{status,jdbcType=VARCHAR}
+		</if>
+		<if test="exceptionType != null and exceptionType != ''">
+	    and t3.exceptionType = #{exceptionType,jdbcType=VARCHAR}
+		</if>
+		<if test="createTimeStart != null">
+			AND t2.create_time <![CDATA[>=]]> CONCAT(#{createTimeStart, jdbcType=VARCHAR},' 00:00:00')
+		</if>
+		<if test="createTimeEnd != null">
+			AND t2.create_time <![CDATA[<=]]> CONCAT(#{createTimeEnd, jdbcType=VARCHAR},' 23:59:59')
+		</if>
+		<if test="mobilePhone != null and mobilePhone != ''">
+		    AND t2.mobile_phone = #{mobilePhone,jdbcType=VARCHAR}
+		</if>
+		<if test="merchantName != null and merchantName != ''">
+		    AND t5.supplier like CONCAT('%', #{merchantName,jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="brandName != null and brandName != ''">
+		    AND t7.brand_name like CONCAT('%', #{brandName,jdbcType=VARCHAR}, '%')
+		</if>
+		 and t4.merchant_code is not null and LENGTH(t4.merchant_code)!=0
+	</sql>
+	<select id="getAbnormalSaleApplyListCount" parameterType="com.yougou.merchant.api.order.vo.QueryAbnormalSaleApplyVo" resultType="int">
+		select COUNT(*) from tbl_order_sale_apply_bill t2
+		INNER JOIN tbl_order_sub t1 on(t1.order_sub_no = t2.order_no)
+		INNER JOIN tbl_order_sale_apply_abnormal_detail t3 on(t3.apply_id = t2.id)
+		INNER JOIN tbl_order_sub_expand t4 on(t4.order_sub_id = t1.id )
+		INNER JOIN tbl_sp_supplier t5 on(t5.supplier_code = t4.merchant_code)
+        INNER JOIN tbl_order_cancel_goods_info t6 on(t6.apply_id = t2.id )
+        INNER JOIN tbl_commodity_style t7 on(t7.id = t6.commodity_id )
+		Where 1=1
+		<include refid="getAbnormalSaleApplyList_where" />
+		and t4.merchant_code is not null and LENGTH(t4.merchant_code)!=0
+	</select>
+</mapper>

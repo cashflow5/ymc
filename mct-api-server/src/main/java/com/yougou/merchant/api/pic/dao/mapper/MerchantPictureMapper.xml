@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.pic.dao.MerchantPictureMapper" >
+    <!-- 图片 -->
+    <resultMap id="merchantPictureMapper" type="com.yougou.merchant.api.pic.service.vo.MerchantPicture" >    
+        <result property="id" column="id" jdbcType="VARCHAR" />
+        <result property="picName" column="inner_pic_name" jdbcType="VARCHAR" />
+        <result property="thumbnaiPicName" column="thumbnai_pic_name" jdbcType="VARCHAR" />
+        <result property="picPath" column="inner_pic_path" jdbcType="VARCHAR" />
+        <result property="picSize" column="pic_size" jdbcType="BIGINT" />
+        <result property="created" column="created" jdbcType="TIMESTAMP" />
+        <result property="merchantCode" column="merchant_code" jdbcType="VARCHAR" />
+        <result property="catalogId" column="catalog_id" jdbcType="VARCHAR" />
+        <result property="shopId" column="shop_id" jdbcType="VARCHAR" />
+        <result property="picType" column="pic_type" jdbcType="INTEGER" />
+        <result property="sourcePicName" column="source_pic_name" jdbcType="VARCHAR" />
+        <result property="width" column="width" jdbcType="INTEGER" />
+        <result property="height" column="height" jdbcType="INTEGER" />
+    </resultMap>
+    <!-- 目录 -->
+    <resultMap id="merchantPictureCatalogMapper" type="com.yougou.merchant.api.pic.service.vo.MerchantPictureCatalog" >    
+        <result property="id" column="id" jdbcType="VARCHAR" />
+        <result property="catalogName" column="catalog_name" jdbcType="VARCHAR" />
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP" />
+        <result property="parentId" column="parent_id" jdbcType="VARCHAR" />
+        <result property="parentName" column="parent_name" jdbcType="VARCHAR" />
+        <result property="merchantCode" column="merchant_code" jdbcType="VARCHAR" />
+        <result property="shopId" column="shop_id" jdbcType="VARCHAR" />
+    </resultMap>
+	
+	<select id="queryMerchantPicList" resultMap="merchantPictureMapper" parameterType="com.yougou.merchant.api.pic.service.vo.MerchantPictureVO">
+		SELECT
+			p.id,p.inner_pic_name,p.thumbnai_pic_name,p.inner_pic_path,p.pic_size,p.created,p.merchant_code,p.catalog_id,p.pic_type,p.source_pic_name,p.width,p.height,p.shop_id  
+		FROM
+			tbl_merchant_commodity_pics p 
+		where p.inner_pic_path IS NOT NULL
+		  and p.merchant_code = #{merchantCode,jdbcType=VARCHAR} 
+		<if test="shopId != null and shopId != ''">
+		  and p.shop_id = #{shopId,jdbcType=VARCHAR} 		
+		</if>
+		<if test="createdStart != null">
+		  and p.created <![CDATA[>=]]> #{createdStart}  
+		</if>
+		<if test="createdEnd != null">
+		  and p.created <![CDATA[<=]]> #{createdEnd}  		
+		</if>
+		<if test="picName != null and picName != ''">
+		  and p.inner_pic_name like concat('%','${picName}','%') 
+		</if>
+		<if test="srcPicName != null and srcPicName != ''">
+		  and p.source_pic_name like concat('%','${srcPicName}', '%')
+		</if>
+	    <if test="picType != null">
+		  and p.pic_type = #{picType}  		
+		</if>
+	    <if test="catalogId != null and catalogId != ''">
+		  and p.catalog_id = #{catalogId,jdbcType=VARCHAR}  		
+		</if>
+		<!-- 时间顺序排 -->
+		<if test="orderBy!=null and orderBy=='2'.toString()">
+			order by p.created 
+		</if>
+		<!-- 名称顺序排列 -->
+		<if test="orderBy!=null and orderBy=='1'.toString()">
+			order by p.source_pic_name 
+		</if>
+		<if test="orderBy==null">
+			ORDER BY p.created DESC
+		</if>
+	</select>
+	
+	<select id="queryMerchantPicListCount" resultType="int" parameterType="com.yougou.merchant.api.pic.service.vo.MerchantPictureVO">
+		SELECT
+			count(1)
+		FROM
+			tbl_merchant_commodity_pics p  
+		where p.inner_pic_path IS NOT NULL
+		  and p.merchant_code = #{merchantCode,jdbcType=VARCHAR} 
+		<if test="shopId != null and shopId != ''">
+		  and p.shop_id = #{shopId,jdbcType=VARCHAR} 		
+		</if>
+		<if test="createdStart != null">
+		  and p.created <![CDATA[>=]]> #{createdStart}  
+		</if>
+		<if test="createdEnd != null">
+		  and p.created <![CDATA[<=]]> #{createdEnd}  		
+		</if>
+		<if test="picName != null and picName != ''">
+		  and p.inner_pic_name like concat('%', '${picName}', '%')
+		</if>
+		<if test="srcPicName != null and srcPicName != ''">
+		  and p.source_pic_name like concat('%', '${srcPicName}', '%')
+		</if>
+		<if test="picType != null">
+		  and p.pic_type = #{picType}  		
+		</if>
+	    <if test="catalogId != null and catalogId != ''" >
+		  and p.catalog_id = #{catalogId,jdbcType=VARCHAR}  		
+		</if>
+	</select>
+	
+	<select id="queryShopPicCatalogList" resultMap="merchantPictureCatalogMapper" parameterType="map">
+		SELECT
+			id,catalog_name,create_time,parent_id,merchant_code,shop_id
+		FROM
+			tbl_merchant_pics_catalog where shop_id =#{shopId} and merchant_code=#{merchantCode}
+	</select>
+	
+	<select id="queryCommodityPicCatalogList" resultMap="merchantPictureCatalogMapper" parameterType="java.lang.String">
+		SELECT
+			id,catalog_name,create_time,parent_id,merchant_code,shop_id
+		FROM
+			tbl_merchant_pics_catalog where shop_id is null and merchant_code=#{merchantCode}
+	</select>
+	
+	<!-- 目录操作 -->
+	<select id="getPicCatalog" resultMap="merchantPictureCatalogMapper" parameterType="java.lang.String">
+		SELECT
+			id,catalog_name,create_time,parent_id,merchant_code,shop_id
+		FROM
+			tbl_merchant_pics_catalog where id=#{id}
+	</select>
+	<insert id="insertPicCatalog" parameterType="com.yougou.merchant.api.pic.service.vo.MerchantPictureCatalog">
+		INSERT INTO tbl_merchant_pics_catalog (
+			id,
+			catalog_name,
+			parent_id,
+			merchant_code,
+			shop_id
+		)
+		VALUES
+			(
+			#{id},
+			#{catalogName},
+			#{parentId},
+			#{merchantCode},
+			#{shopId}
+			)
+	</insert>
+	
+	<update id="updatePicCatalog" parameterType="com.yougou.merchant.api.pic.service.vo.MerchantPictureCatalog">
+		UPDATE tbl_merchant_pics_catalog
+		SET 
+			catalog_name = #{catalogName, jdbcType=VARCHAR}, 
+			parent_id = #{parentId, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="selectCatalogByParentId" parameterType="java.lang.String" resultMap="merchantPictureCatalogMapper">
+		SELECT * FROM tbl_merchant_pics_catalog where parent_id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="delPicCatalog" parameterType="java.lang.String">
+		delete from tbl_merchant_pics_catalog where id = #{id, jdbcType=VARCHAR} or parent_id = #{id, jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 图片操作 -->
+	<insert id="insertPic" parameterType="com.yougou.merchant.api.pic.service.vo.MerchantPicture">
+		INSERT INTO tbl_merchant_commodity_pics (
+			id,
+			inner_pic_name,
+			thumbnai_pic_name,
+			inner_pic_path,
+			pic_size,
+			merchant_code,
+			catalog_id,
+			pic_type,
+			source_pic_name,
+			width,
+			height,
+			shop_id
+		)
+		VALUES
+			(
+			#{id},
+			#{picName},
+			#{thumbnaiPicName},
+			#{picPath},
+			#{picSize},
+			#{merchantCode},
+			#{catalogId},
+			#{picType},
+			#{sourcePicName},
+			#{width},
+			#{height},
+			#{shopId}
+			)
+	</insert>
+	
+	<update id="updatePic" parameterType="com.yougou.merchant.api.pic.service.vo.MerchantPicture">
+		UPDATE tbl_merchant_commodity_pics
+		SET 
+			inner_pic_name = #{picName, jdbcType=VARCHAR}, 
+			thumbnai_pic_name = #{thumbnaiPicName, jdbcType=VARCHAR},
+			inner_pic_path = #{picPath, jdbcType=VARCHAR},
+			pic_size = #{picSize, jdbcType=BIGINT},
+			merchant_code = #{merchantCode, jdbcType=VARCHAR},
+			catalog_id = #{catalogId, jdbcType=VARCHAR},
+			pic_type = #{picType, jdbcType=INTEGER},
+			source_pic_name = #{sourcePicName, jdbcType=VARCHAR},
+			width = #{width, jdbcType=INTEGER},
+			height = #{height, jdbcType=INTEGER},
+			shop_id= #{shopId, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="delPic" parameterType="java.lang.String">
+		delete from tbl_merchant_commodity_pics where id = #{id, jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="delPicByCatalogId" parameterType="java.lang.String">
+		delete from tbl_merchant_commodity_pics where catalog_id = #{catalogId, jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 批量删除图片 -->
+	
+	<delete id="delPicByCatalogIdBatch" parameterType="java.lang.String">
+		delete from tbl_merchant_commodity_pics where catalog_id in (
+		<foreach collection="list" item="item" index="index" separator=","> 
+			#{item.id,jdbcType=VARCHAR}
+        </foreach>
+         )
+	</delete>
+	
+	<select id="queryPicById" resultMap="merchantPictureMapper" parameterType="java.lang.String">
+		SELECT
+			p.id,p.inner_pic_name,p.thumbnai_pic_name,p.inner_pic_path,p.pic_size,p.created,p.merchant_code,p.catalog_id,p.pic_type,p.source_pic_name,p.width,p.height,p.shop_id 
+		FROM
+			tbl_merchant_commodity_pics p where p.id=#{id, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="movePics" parameterType="map">
+		UPDATE tbl_merchant_commodity_pics
+		SET 
+			catalog_id = #{catalogId, jdbcType=VARCHAR}
+		WHERE
+		<if test="picId != null">
+	 		id in 
+	 		<foreach index="index" item="item" collection="picId" open="(" separator="," close=")">
+        	   #{item}
+            </foreach>
+		</if>
+	</update>
+</mapper>

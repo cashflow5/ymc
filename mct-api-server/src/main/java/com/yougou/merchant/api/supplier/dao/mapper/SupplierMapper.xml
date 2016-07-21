@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.SupplierMapper" >
+    
+    <resultMap id="SupplierColumnMapper" type="com.yougou.merchant.api.supplier.vo.SupplierVo" >    
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="supplier_code" property="supplierCode" jdbcType="VARCHAR" />
+        <result column="supplier" property="supplier" jdbcType="VARCHAR" />
+        <result column="english_name" property="englishName" jdbcType="VARCHAR" />
+        <result column="simple_name" property="simpleName" jdbcType="VARCHAR" />
+        <result column="contact" property="contact" jdbcType="VARCHAR" />
+        <result column="tele_phone" property="telePhone" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="fax" property="fax" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="update_timestamp" property="updateTimestamp" jdbcType="BIGINT" />
+        <result column="is_valid" property="isValid" jdbcType="INTEGER" />
+        <result column="supplier_type" property="supplierType" jdbcType="VARCHAR" />
+        <result column="bank" property="bank" jdbcType="VARCHAR" />
+        <result column="sub_bank" property="subBank" jdbcType="VARCHAR" />
+        <result column="duty_code" property="dutyCode" jdbcType="VARCHAR" />
+        <result column="creator" property="creator" jdbcType="VARCHAR" />
+        <result column="account" property="account" jdbcType="VARCHAR" />
+        <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+        <result column="con_time" property="conTime" jdbcType="INTEGER" />
+        <result column="is_config" property="isConfig" jdbcType="INTEGER" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+        <result column="tax_rate" property="taxRate" jdbcType="DOUBLE" />
+        <result column="coupons_allocation_proportion" property="couponsAllocationProportion" jdbcType="DOUBLE" />
+        <result column="inventory_code" property="inventoryCode" jdbcType="VARCHAR" />
+        <result column="business_license" property="businessLicense" jdbcType="VARCHAR" />
+        <result column="business_local" property="businessLocal" jdbcType="VARCHAR" />
+        <result column="business_vilidity" property="businessValidity" jdbcType="VARCHAR" />
+        <result column="tallage_no" property="tallageNo" jdbcType="VARCHAR" />
+        <result column="institutional" property="institutional" jdbcType="VARCHAR" />
+        <result column="taxpayer" property="taxpayer" jdbcType="VARCHAR" />
+        <result column="bank_local" property="bankLocal" jdbcType="VARCHAR" />
+        <result column="is_input_yougou_warehouse" property="isInputYougouWarehouse" jdbcType="INTEGER" />
+        <result column="set_of_books_code" property="setOfBooksCode" jdbcType="VARCHAR" />
+        <result column="set_of_books_name" property="setOfBooksName" jdbcType="VARCHAR" />
+        <result column="balance_trader_code" property="balanceTraderCode" jdbcType="VARCHAR" />
+        <result column="balance_trader_name" property="balanceTraderName" jdbcType="VARCHAR" />
+        <result column="pos_source_no" property="posSourceNo" jdbcType="VARCHAR" />
+        <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+        <result column="shipment_type" property="shipmentType" jdbcType="INTEGER" />
+        <result column="trade_currency" property="tradeCurrency" jdbcType="VARCHAR" />
+        <result column="is_use_yougou_wms" property="isUseYougouWms" jdbcType="INTEGER"/>
+        <result column="is_invoice" property="isInvoice" jdbcType="INTEGER"/>
+        <result column="is_add_value_invoice" property="isAddValueInvoice" jdbcType="INTEGER"/>
+        
+        <result column="supplier_type_code" property="supplierTypeCode" jdbcType="VARCHAR" />
+        <result column="is_direct" property="isDirect" jdbcType="VARCHAR" />
+        <result column="invoice_name" property="invoiceName" jdbcType="VARCHAR" />
+        <result column="invoice_address" property="invoiceAddress" jdbcType="VARCHAR" />
+        <result column="invoice_phone" property="invoicePhone" jdbcType="VARCHAR" />
+        <result column="update_username" property="updateUsername" jdbcType="VARCHAR" />
+        <result column="creatorname" property="creatorname" jdbcType="VARCHAR"/>
+        <result column="factory_no" property="factoryNo" jdbcType="VARCHAR"/>
+        <result column="taxplayer_type" property="taxplayerType" jdbcType="VARCHAR"/>
+        <result column="delivery_type" property="deliveryType" jdbcType="VARCHAR"/>
+        <result column="clear_bank" property="clearBank" jdbcType="VARCHAR"/>
+        <result column="clear_account" property="clearAccount" jdbcType="VARCHAR"/>
+        
+    </resultMap>
+    
+    <sql id="SupplierColumnList" >
+        id,
+        supplier_code,
+        supplier,
+        english_name,
+        simple_name,
+        contact,
+        tele_phone,
+        email,
+        fax,
+        update_timestamp,
+        address,
+        url,
+        remark,
+        is_valid,
+        supplier_type,
+        bank,
+        sub_bank,
+        duty_code,
+        creator,
+        account,
+        pay_type,
+        con_time,
+        is_config,
+        update_date,
+        update_user,
+        tax_rate,
+        coupons_allocation_proportion,
+        inventory_code,
+        business_license,
+        business_local,
+        business_vilidity,
+        tallage_no,
+        institutional,
+        taxpayer,
+        bank_local,
+        is_input_yougou_warehouse,
+        set_of_books_code,
+        set_of_books_name,
+        balance_trader_code,
+        balance_trader_name,
+        pos_source_no,
+        delete_flag,
+        shipment_type,
+        trade_currency,
+        is_use_yougou_wms,
+        is_invoice,
+        is_add_value_invoice,
+        supplier_type_code,
+        is_direct,
+        invoice_name,
+        invoice_address,
+        invoice_phone,
+        update_username,
+        creatorname,
+        factory_no,
+        taxplayer_type,
+        delivery_type,
+        clear_bank,
+        clear_account
+     
+    </sql>
+    
+    <sql id="queryWhere">
+        <if test="id!=null and id!=''">
+        	and id = #{id,jdbcType=VARCHAR}
+        </if>
+    </sql>
+    
+    <select id="getAllSupplier" resultMap="SupplierColumnMapper">
+        select 
+        <include refid="SupplierColumnList" />
+        from tbl_sp_supplier
+        where delete_flag = 1
+    </select>
+    
+    <select id="querySupplierByVo" resultMap="SupplierColumnMapper" parameterType="com.yougou.merchant.api.supplier.vo.SupplierVo">
+        select 
+        <include refid="SupplierColumnList" />
+        from tbl_sp_supplier
+        where delete_flag = 1 
+        <include refid="queryWhereByVo"/>
+        order by update_timestamp desc 
+    </select>
+    
+    <sql id="queryWhereByVo">
+    	<if test="id != null and id != ''">
+    		and id = #{id, jdbcType=VARCHAR}
+    	</if>
+    	<if test="supplier != null and supplier != ''">
+    		and supplier like CONCAT('%', '${supplier}', '%')
+    	</if>
+    	<if test="supplierCode != null and supplierCode != ''">
+    		and supplier_code = #{supplierCode, jdbcType=VARCHAR}
+    	</if>
+    	<if test="supplierType != null and supplierType != ''">
+    		and supplier_type = #{supplierType, jdbcType=VARCHAR}
+    	</if>
+    	<if test="isValid != null">
+    		and is_valid = #{isValid, jdbcType=INTEGER}
+    	</if>
+    	<if test="isInputYougouWarehouse != null">
+    		and is_input_yougou_warehouse = #{isInputYougouWarehouse, jdbcType=INTEGER}
+    	</if>
+    	<if test="isConfig != null and isConfig == 1">
+    		and is_config = 1
+    	</if>
+    	<if test="isConfig == null or isConfig == 0">
+    		and (is_config = 0 or is_config is null)
+    	</if>
+    </sql>
+    
+    <select id="getSupplierIsInputYougouWarehouse" resultType="java.lang.Integer" parameterType="java.lang.String" >
+        select 
+        is_input_yougou_warehouse
+        from tbl_sp_supplier
+        where supplier_code = #{merchantCode,jdbcType=VARCHAR} AND delete_flag = 1
+    </select>
+
+    <select id="getSupplierByMerchantCode" resultMap="SupplierColumnMapper" parameterType="java.lang.String">
+        select 
+        <include refid="SupplierColumnList" />
+        from tbl_sp_supplier
+        where supplier_code = #{merchantCode,jdbcType=VARCHAR} AND delete_flag = 1
+    </select>
+    
+    <select id="updateSupplierOtherWarehouseCodeNull">
+	    UPDATE tbl_sp_supplier SET inventory_code = null, update_user = #{updateUser,jdbcType=VARCHAR}, update_date = #{updateDate,jdbcType=DATE}
+	    WHERE inventory_code = #{warehouseCode,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="updateSupplierWarehouseCode">
+	    UPDATE tbl_sp_supplier SET inventory_code = #{warehouseCode,jdbcType=VARCHAR}, update_user = #{updateUser,jdbcType=VARCHAR}, update_date = #{updateDate,jdbcType=DATE}
+	    WHERE supplier_code = #{merchantCode,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="getSupplierByName" resultMap="SupplierColumnMapper" parameterType="java.lang.String">
+        select 
+        <include refid="SupplierColumnList" />
+        from tbl_sp_supplier
+        where supplier = #{supplier,jdbcType=VARCHAR} AND delete_flag = 1
+    </select>
+    
+    <select id="querySupplierListByPage" resultMap="SupplierColumnMapper" parameterType="com.yougou.merchant.api.supplier.vo.SupplierQueryVo">
+    	SELECT DISTINCT
+		    s.id,
+			s.supplier,
+			s.supplier_code,
+			s.inventory_code,
+			s.is_input_yougou_warehouse,
+			s.coupons_allocation_proportion,
+			s.is_valid,
+			s.update_date,
+			s.update_user,
+		  s.supplier_type
+		FROM
+			tbl_sp_supplier s LEFT JOIN tbl_sp_limit_brand b ON (s.id = b.supply_id)
+		WHERE delete_flag = 1 
+		<include refid="querySupplierListWhere"/>
+		AND s.supplier_type = '招商供应商'
+		order by s.update_date desc
+    </select>
+    
+    <select id="querySupplierListByCount" resultType="int" parameterType="com.yougou.merchant.api.supplier.vo.SupplierQueryVo">
+    	SELECT count(DISTINCT s.id)
+		FROM
+			tbl_sp_supplier s LEFT JOIN tbl_sp_limit_brand b ON (s.id = b.supply_id)
+		WHERE delete_flag = 1 
+		<include refid="querySupplierListWhere"/>
+		AND s.supplier_type = '招商供应商'
+		<include refid="querySupplierListWhere"/>
+    </select>
+    
+    <sql id="querySupplierListWhere">
+    	<if test="supplierCode != null and supplierCode != ''">
+			AND s.supplier_code like CONCAT('${supplierCode}', '%') 
+		</if>
+		<if test="supplier != null and supplier != ''">
+			AND s.supplier like CONCAT('%', '${supplier}', '%')  
+		</if>
+		<if test="isValid != null">
+			AND s.is_valid = #{isValid, jdbcType=INTEGER} 
+		</if> 
+		<if test="isInputYougouWarehouse != null">
+			AND s.is_input_yougou_warehouse = #{isInputYougouWarehouse, jdbcType=INTEGER} 
+		</if> 
+		<if test="brandNos != null">
+			AND b.brand_no in 
+			<foreach index="index" item="item" collection="brandNos" open="(" separator="," close=")">
+        	#{item}
+        	</foreach>
+		</if>
+    </sql>
+    
+    <insert id="insertSupplier" parameterType="com.yougou.merchant.api.supplier.vo.SupplierVo">
+    	INSERT INTO tbl_sp_supplier (
+			id,
+			supplier_code,
+			supplier,
+			english_name,
+			simple_name,
+			contact,
+			tele_phone,
+			email,
+			fax,
+			update_timestamp,
+			address,
+			url,
+			remark,
+			is_valid,
+			supplier_type,
+			bank,
+			sub_bank,
+			duty_code,
+			creator,
+			account,
+			pay_type,
+			con_time,
+			login_account,
+			login_password,
+			<if test="isConfig != null">
+				is_config,	
+			</if>
+			update_date,
+			update_user,
+			<if test="taxRate != null">
+				tax_rate,
+			</if>
+			<if test="couponsAllocationProportion != null">
+				coupons_allocation_proportion,
+			</if>
+			inventory_code,
+			business_license,
+			business_local,
+			business_vilidity,
+			tallage_no,
+			institutional,
+			taxpayer,
+			bank_local,
+			<if test="isInputYougouWarehouse != null">
+				is_input_yougou_warehouse,
+			</if>
+			set_of_books_code,
+			set_of_books_name,
+			balance_trader_code,
+			balance_trader_name,
+			pos_source_no,
+			<if test="deleteFlag != null">
+				delete_flag,	
+			</if>
+			<if test="isUseYougouWms != null">
+				is_use_yougou_wms,
+			</if>
+			<if test="isHongKong != null">
+				is_hongkong,
+			</if>
+			shipment_type,
+			trade_currency
+		)
+		VALUES
+			(
+			#{id},
+			#{supplierCode},
+			#{supplier},
+			#{englishName},
+			#{simpleName},
+			#{contact},
+			#{telePhone},
+			#{email},
+			#{fax},
+			#{updateTimestamp},
+			#{address},
+			#{url},
+			#{remark},
+			#{isValid},
+			#{supplierType},
+			#{bank},
+			#{subBank},
+			#{dutyCode},
+			#{creator},
+			#{account},
+			#{payType},
+			#{conTime},
+			#{loginAccount},
+			#{loginPassword},
+			<if test="isConfig != null">
+				#{isConfig},	
+			</if>
+			#{updateDate},
+			#{updateUser},
+			<if test="taxRate != null">
+				#{taxRate},
+			</if>
+			<if test="couponsAllocationProportion != null">
+				#{couponsAllocationProportion},
+			</if>
+			#{inventoryCode},
+			#{businessLicense},
+			#{businessLocal},
+			#{businessValidity},
+			#{tallageNo},
+			#{institutional},
+			#{taxpayer},
+			#{bankLocal},
+			<if test="isInputYougouWarehouse != null">
+				#{isInputYougouWarehouse},
+			</if>
+			#{setOfBooksCode},
+			#{setOfBooksName},
+			#{balanceTraderCode},
+			#{balanceTraderName},
+			#{posSourceNo},
+			<if test="deleteFlag != null">
+				#{deleteFlag},	
+			</if>
+			<if test="isUseYougouWms != null">
+				#{isUseYougouWms},
+			</if>
+			<if test="isHongKong != null">
+				#{isHongKong},	
+			</if>
+			#{shipmentType},
+			#{tradeCurrency}
+			)
+    </insert>
+    
+    <update id="updateSupplier" parameterType="com.yougou.merchant.api.supplier.vo.SupplierVo">
+    	UPDATE tbl_sp_supplier
+		SET 
+			<if test="deleteFlag != null">
+				delete_flag = #{deleteFlag, jdbcType=INTEGER},
+			</if>
+			<if test="supplier != null and supplier != ''">
+				supplier = #{supplier, jdbcType=VARCHAR},
+			</if>
+			<if test="supplierType != null and supplierType != ''">
+				supplier_type = #{supplierType, jdbcType=VARCHAR},
+			</if>
+			<if test="isInputYougouWarehouse != null">
+				is_input_yougou_warehouse = #{isInputYougouWarehouse, jdbcType=INTEGER},
+			</if>
+			<if test="isUseYougouWms != null">
+				is_use_yougou_wms = #{isUseYougouWms, jdbcType=INTEGER},
+			</if>
+			<if test="setOfBooksCode != null and setOfBooksCode != ''">
+				set_of_books_code = #{setOfBooksCode, jdbcType=VARCHAR},
+			</if>
+			<if test="setOfBooksName != null and setOfBooksName != ''">
+				set_of_books_name = #{setOfBooksName, jdbcType=VARCHAR},
+			</if>
+			<if test="taxRate != null">
+				tax_rate = #{taxRate, jdbcType=DECIMAL},
+			</if>
+			<if test="shipmentType != null">
+				shipment_type = #{shipmentType, jdbcType=INTEGER},
+			</if>
+			<if test="couponsAllocationProportion != null">
+				coupons_allocation_proportion =#{couponsAllocationProportion, jdbcType=DECIMAL},
+			</if>
+			<if test="contact != null and contact != ''">
+				contact = #{contact, jdbcType=VARCHAR},
+			</if>
+			<if test="account != null and account != ''">
+				account = #{account, jdbcType=VARCHAR},
+			</if>
+			<if test="subBank != null and subBank != ''">
+				sub_bank = #{subBank, jdbcType=VARCHAR},
+			</if>
+			<if test="bankLocal != null and bankLocal != ''">
+				bank_local = #{bankLocal, jdbcType=VARCHAR},
+			</if>
+			<if test="businessLicense != null and businessLicense != ''">
+				business_license = #{businessLicense, jdbcType=VARCHAR},
+			</if>
+			<if test="businessLocal != null and businessLocal != ''">
+				business_local = #{businessLocal, jdbcType=VARCHAR},
+			</if>
+			<if test="businessValidity != null and businessValidity != ''">
+				business_vilidity = #{businessValidity, jdbcType=VARCHAR},
+			</if>
+			<if test="tallageNo != null and tallageNo != ''">
+				tallage_no = #{tallageNo, jdbcType=VARCHAR},
+			</if>
+			<if test="institutional != null and institutional != ''">
+				institutional = #{institutional, jdbcType=VARCHAR},
+			</if>
+			<if test="taxpayer != null and taxpayer != ''">
+				taxpayer = #{taxpayer, jdbcType=VARCHAR},
+			</if>
+			<if test="tradeCurrency != null and tradeCurrency != ''">
+				trade_currency = #{tradeCurrency, jdbcType=VARCHAR},
+			</if>
+			<if test="isHongKong != null">
+				is_hongkong = #{isHongKong, jdbcType=VARCHAR},
+			</if>
+			<if test="payType != null and payType != ''">
+				pay_type = #{payType, jdbcType=VARCHAR},
+			</if>
+			<if test="balanceTraderCode != null and balanceTraderCode != ''">
+				balance_trader_code = #{balanceTraderCode, jdbcType=VARCHAR},
+			</if>
+			<if test="balanceTraderName != null and balanceTraderName != ''">
+				balance_trader_name = #{balanceTraderName, jdbcType=VARCHAR},
+			</if>
+			<if test="setOfBooksCode != null and setOfBooksCode != ''">
+				set_of_books_code = #{setOfBooksCode, jdbcType=VARCHAR},
+			</if>
+			<if test="setOfBooksName != null and setOfBooksName != ''">
+				set_of_books_name = #{setOfBooksName, jdbcType=VARCHAR},
+			</if>
+			<if test="inventoryCode != null and inventoryCode != ''">
+				inventory_code = #{inventoryCode, jdbcType=VARCHAR},
+			</if>
+			<if test="englishName != null and englishName != ''">
+				english_name = #{englishName, jdbcType=VARCHAR},
+			</if>
+			<if test="simpleName != null and simpleName != ''">
+				simple_name = #{inventoryCode, jdbcType=VARCHAR},
+			</if>
+			<if test="telePhone != null and telePhone != ''">
+				tele_phone = #{telePhone, jdbcType=VARCHAR},
+			</if>
+			<if test="email != null and email != ''">
+				email = #{email, jdbcType=VARCHAR},
+			</if>
+			<if test="fax != null and fax != ''">
+				fax = #{fax, jdbcType=VARCHAR},
+			</if>
+			<if test="address != null and address != ''">
+				address = #{address, jdbcType=VARCHAR},
+			</if>
+			<if test="url != null and url != ''">
+				url = #{url, jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null and remark != ''">
+				remark = #{remark, jdbcType=VARCHAR},
+			</if>
+			<if test="isValid != null">
+				is_valid = #{isValid, jdbcType=VARCHAR},
+			</if>
+			<if test="bank != null and bank != ''">
+				bank = #{bank, jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null and dutyCode != ''">
+				duty_code = #{dutyCode, jdbcType=VARCHAR},
+			</if>
+			<if test="conTime != null">
+				con_time = #{conTime, jdbcType=VARCHAR},
+			</if>
+			<if test="loginAccount != null and loginAccount != ''">
+				login_account = #{loginAccount, jdbcType=VARCHAR},
+			</if>
+			<if test="loginPassword != null and loginPassword != ''">
+				login_password = #{loginPassword, jdbcType=VARCHAR},
+			</if>
+			<if test="isConfig != null">
+				is_config = #{isConfig, jdbcType=INTEGER},
+			</if>
+			<if test="posSourceNo != null and posSourceNo != ''">
+				pos_source_no = #{posSourceNo, jdbcType=VARCHAR},
+			</if>
+			update_date = #{updateDate},
+			update_timestamp = #{updateTimestamp},
+			update_user = #{updateUser, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+    </update>
+    
+    <select id="getSupplierById" resultMap="SupplierColumnMapper" parameterType="java.lang.String">
+        select 
+        <include refid="SupplierColumnList" />
+        from tbl_sp_supplier
+        where id = #{supplierId,jdbcType=VARCHAR}
+    </select>
+    
+     <select id="getSupplierIsInvoice" resultType="java.lang.Integer" parameterType="java.lang.String" >
+        select 
+        is_invoice
+        from tbl_sp_supplier
+        where supplier_code = #{merchantCode,jdbcType=VARCHAR} AND delete_flag = 1
+    </select>
+    
+    
+    <select id="getSupplierDeliveryType" resultType="java.lang.String" parameterType="java.lang.String" >
+        select 
+        delivery_type
+        from tbl_sp_supplier
+        where supplier_code = #{merchantCode,jdbcType=VARCHAR} AND delete_flag = 1
+    </select>
+    
+</mapper>

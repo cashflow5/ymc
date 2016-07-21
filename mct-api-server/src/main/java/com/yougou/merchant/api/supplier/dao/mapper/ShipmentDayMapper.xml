@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.ShipmentDayMapper" >
+    
+    <select id="isNotShipmentDay" resultType="int" >
+    	SELECT COUNT(1) FROM tbl_merchant_shipment_day_setting d 
+		WHERE d.is_shipment_day = '0' AND d.year = ${year} AND d.month = ${month} AND d.day = ${day};
+    </select>
+   
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.taobao.dao.TaobaoMapper">
+
+	
+	<resultMap id="propMap" type="com.yougou.merchant.api.taobao.vo.PropItem" >
+		<id column="yougou_prop_item_no" property="ygPropNo" jdbcType="VARCHAR" />
+		<id column="pid" property="tbPropNo" jdbcType="VARCHAR" />
+		<id column="name" property="tbPropName" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 通过ID查询淘宝属性 -->
+	<select id="selectTaobaoPropById" resultMap="propMap">
+		select * from tbl_merchant_taobao_item_prop where pid = #{pid,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<resultMap id="propValueMap" type="com.yougou.merchant.api.taobao.vo.PropValue" >
+		<id column="vid" property="tbPropValueNo" jdbcType="VARCHAR" />
+		<id column="name" property="tbPropValueName" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 通过ID查询淘宝属性 -->
+	<select id="selectTaobaoPropValueById" resultMap="propValueMap">
+		select * from tbl_merchant_taobao_item_prop_value where vid = #{vid,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<select id="selectTaobaoYougouItemCat" resultType="com.yougou.merchant.api.taobao.vo.TranslateResult">
+		select t.taobao_cid tbCategoryCode,c.name tbCategoryName,t.yougou_cat_full_name tbCategoryFullName from tbl_merchant_taobao_yougou_itemcat_templet t 
+		inner join tbl_merchant_taobao_itemcat c on c.cid = t.taobao_cid
+		where t.yougou_cat_no = #{ygCatoryCode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectTaobaoYougouProp" resultMap="propMap">
+		select taobao_pid tbPropNo,yougou_prop_item_no ygPropNo from tbl_merchant_taobao_yougou_item_prop_templet
+		where taobao_cid = #{taobaoCid,jdbcType=VARCHAR} and yougou_cat_no = #{yougouCatNo,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectTaobaoYougouPropValue" resultMap="propValueMap">
+		select taobao_vid tbPropValueNo,yougou_prop_value_no ygPropValueNo from tbl_merchant_taobao_yougou_item_prop_value_templet
+		where taobao_cid = #{taobaoCid,jdbcType=VARCHAR} and yougou_cat_no = #{yougouCatNo,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

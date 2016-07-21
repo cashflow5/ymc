@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.monitor.dao.ReportMapper">
+    <!-- API监控统计报表 -->	
+	<sql id="queryAnalyzeDetail_all_columns">
+		id,
+		app_key,
+		api_id,
+		create_time,
+		time_quantum,
+		call_count,
+		valid_call_count,
+		sucess_call_count,
+		fail_call_count,
+		avg_ex_time
+	</sql>
+	
+	<insert id="insertAnalyzeDetail" parameterType="com.yougou.merchant.api.monitor.vo.AnalyzeDetail">
+		INSERT INTO tbl_merchant_api_analyze_detail (
+			<include refid="queryAnalyzeDetail_all_columns"/>)
+		VALUES
+			(
+			#{id},
+			#{appKey},
+			#{apiId},
+			#{createTime},
+			#{timeQuantum},
+			#{callCount},
+			#{validCallCount},
+			#{sucessCallCount},
+			#{failCallCount},
+			#{avgExTime}
+			)
+	</insert>
+	
+	<insert id="insertAnalyzeAppkeyDay" parameterType="com.yougou.merchant.api.monitor.vo.AnalyzeAppkeyDay">
+		INSERT INTO tbl_merchant_api_analyze_appkey_day (
+			id,
+			app_key,
+			create_time,
+			time_quantum,
+			call_count,
+			valid_call_count,
+			sucess_call_count,
+			fail_call_count,
+			max_frequency,
+			order_qty,
+			order_money
+			)
+		VALUES
+			(
+			#{id},
+			#{appKey},
+			#{createTime},
+			#{timeQuantum},
+			#{callCount},
+			#{validCallCount},
+			#{sucessCallCount},
+			#{failCallCount},
+			#{maxFrequency},
+			#{orderQty},
+			#{orderMoney}
+			)
+	</insert>
+	<insert id="insertAnalyzeAppkey" parameterType="com.yougou.merchant.api.monitor.vo.AnalyzeAppkey">
+		INSERT INTO tbl_merchant_api_analyze_appkey (
+			id,
+			app_key,
+			create_time,
+			time_quantum,
+			call_count,
+			valid_call_count,
+			sucess_call_count,
+			fail_call_count,
+			max_frequency,
+			avg_ex_time
+			)
+		VALUES
+			(
+			#{id},
+			#{appKey},
+			#{createTime},
+			#{timeQuantum},
+			#{callCount},
+			#{validCallCount},
+			#{sucessCallCount},
+			#{failCallCount},
+			#{maxFrequency},
+			#{avgExTime}
+			)
+	</insert>
+	
+	<insert id="insertAnalyzeInterfaceDay" parameterType="com.yougou.merchant.api.monitor.vo.AnalyzeInterfaceDay">
+		INSERT INTO tbl_merchant_api_analyze_interface_day (
+			id,
+			api_id,
+			create_time,
+			time_quantum,
+			call_count,
+			valid_call_count,
+			sucess_call_count,
+			fail_call_count,
+			max_frequency,
+			avg_ex_time,
+			max_appkey_nums
+			)
+		VALUES
+			(
+			#{id},
+			#{apiId},
+			#{createTime},
+			#{timeQuantum},
+			#{callCount},
+			#{validCallCount},
+			#{sucessCallCount},
+			#{failCallCount},
+			#{maxFrequency},
+			#{avgExTime},
+			#{maxAppkeyNums}
+			)
+	</insert>
+	<insert id="insertAnalyzeInterface" parameterType="com.yougou.merchant.api.monitor.vo.AnalyzeInterface">
+		INSERT INTO tbl_merchant_api_analyze_interface (
+			id,
+			api_id,
+			create_time,
+			time_quantum,
+			call_count,
+			valid_call_count,
+			sucess_call_count,
+			fail_call_count,
+			max_frequency,
+			avg_ex_time,
+			max_appkey_nums
+			)
+		VALUES
+			(
+			#{id},
+			#{apiId},
+			#{createTime},
+			#{timeQuantum},
+			#{callCount},
+			#{validCallCount},
+			#{sucessCallCount},
+			#{failCallCount},
+			#{maxFrequency},
+			#{avgExTime},
+			#{maxAppkeyNums}
+			)
+	</insert>
+	
+	<insert id="insertAnalyzeIp" parameterType="com.yougou.merchant.api.monitor.vo.AnalyzeIp">
+		INSERT INTO tbl_merchant_api_analyze_ip (
+			id,
+			time_quantum,
+			app_key,
+			ip
+			)
+		VALUES
+			(
+			#{id},
+			#{timeQuantum},
+			#{appKey},
+			#{ip}
+			)
+	</insert>
+	
+	<select id="queryAnalyzeIps" resultType="map">
+		select DISTINCT p.ip 
+		from tbl_merchant_api_analyze_ip p 
+		where p.app_key = #{appKey, jdbcType=VARCHAR} 
+		and p.time_quantum <![CDATA[ >= ]]> #{startTime, jdbcType=VARCHAR} 
+		and p.time_quantum <![CDATA[ <= ]]> #{endTime, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertMonitorInvalidIp" parameterType="com.yougou.merchant.api.monitor.vo.MonitorInvalidIp">
+		INSERT INTO tbl_merchant_api_monitor_invalid_ip (
+			id,
+			time_quantum,
+			doubt_type,
+			ip,
+			invalid_count,
+			last_call_time
+			)
+		VALUES
+			(
+			#{id},
+			#{timeQuantum},
+			#{doubtType},
+			#{ip},
+			#{invalidCount},
+			#{lastCallTime}
+			)
+	</insert>
+	<resultMap type="com.yougou.merchant.api.monitor.vo.MonitorInvalidIp" id="invalidIpMapper">
+		<result column="ip" property="ip" jdbcType="VARCHAR" />
+		<result column="doubt_type" property="doubtType" jdbcType="INTEGER" />
+		<result column="invalid_count" property="invalidCount" jdbcType="INTEGER" />
+		<result column="last_call_time" property="lastCallTime" jdbcType="TIMESTAMP" />
+		<result column="is_black_list" property="isBlackList" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="queryMonitorInvalidIps" resultMap="invalidIpMapper">
+		SELECT
+			t.ip,
+			t.doubt_type,
+			SUM(t.invalid_count) as invalid_count,
+			MAX(t.last_call_time) as last_call_time,
+			CASE delete_fag when 1 then 0 else 1 end as is_black_list 
+		FROM 
+			tbl_merchant_api_monitor_invalid_ip t LEFT JOIN tbl_merchant_api_monitor_ip_blacklist b ON(t.ip = b.ip)
+		WHERE 1=1
+		<include refid="queryMonitorInvalidIps_where"/>
+		group by t.ip, t.doubt_type
+		ORDER BY t.last_call_time DESC
+	</select>
+	<select id="queryMonitorInvalidIpCount" resultType="int">
+		select count(*) from (
+		SELECT
+			t.ip,
+			t.doubt_type
+		FROM
+			tbl_merchant_api_monitor_invalid_ip t
+		WHERE 1=1
+		<include refid="queryMonitorInvalidIps_where"/>
+		group by t.ip, t.doubt_type) b
+	</select>
+	<sql id="queryMonitorInvalidIps_where">
+		<if test="ip != null and ip != ''">
+			AND	t.ip = #{ip, jdbcType=VARCHAR}	
+		</if>
+		<if test="doubtType != null">
+			AND t.doubt_type = #{doubtType, jdbcType=INTEGER}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			AND t.time_quantum <![CDATA[ >= ]]> #{startTime, jdbcType=VARCHAR}	
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND t.time_quantum <![CDATA[ <= ]]> #{endTime, jdbcType=VARCHAR}	
+		</if>
+	</sql>
+	
+	<resultMap type="com.yougou.merchant.api.monitor.vo.AnalyzeInterfaceDay" id="queryApiIntegerGeneralMapper">
+		<result column="api_id" property="apiId" jdbcType="VARCHAR" />
+		<result column="api_name" property="apiName" jdbcType="VARCHAR" />
+		<result column="call_count" property="callCount" jdbcType="INTEGER" />
+		<result column="sucess_call_count" property="sucessCallCount" jdbcType="INTEGER" />
+		<result column="fail_call_count" property="failCallCount" jdbcType="INTEGER" />
+		<result column="avg_ex_time" property="avgExTime" jdbcType="DOUBLE" />
+		<result column="max_appkey_nums" property="maxAppkeyNums" jdbcType="INTEGER" />
+		<result column="max_frequency" property="maxFrequency" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="queryApiIntegerGeneral" resultMap="queryApiIntegerGeneralMapper">
+		SELECT t.api_id,
+			CONCAT(a.api_name, '(', a.api_method, ')') AS api_name,
+			SUM(t.call_count) AS call_count,
+			SUM(t.sucess_call_count) AS sucess_call_count,
+			SUM(t.fail_call_count) AS fail_call_count,
+			AVG(t.avg_ex_time) AS avg_ex_time,
+			MAX(t.max_appkey_nums) AS max_appkey_nums,
+			MAX(t.call_count) AS max_frequency
+		FROM
+			tbl_merchant_api_analyze_interface t
+		INNER JOIN tbl_merchant_api a ON (t.api_id = a.id)
+		WHERE 1=1
+		<if test="startTime != null and startTime != ''">
+			AND t.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND t.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+		</if>
+		GROUP BY t.api_id
+	</select>
+	
+	<resultMap type="com.yougou.merchant.api.monitor.vo.AnalyzeAppkeyDay" id="queryAppKeyGeneralMapper">
+		<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+		<!-- result column="app_key_holder" property="appKeyHolder" jdbcType="VARCHAR" />  -->
+		<result column="call_count" property="callCount" jdbcType="INTEGER" />
+		<result column="sucess_call_count" property="sucessCallCount" jdbcType="INTEGER" />
+		<result column="fail_call_count" property="failCallCount" jdbcType="INTEGER" />
+		<result column="order_qty" property="orderQty" jdbcType="INTEGER" />
+		<result column="order_money" property="orderMoney" jdbcType="DOUBLE" />
+		<result column="max_frequency" property="maxFrequency" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="queryAppKeyGeneral" resultMap="queryAppKeyGeneralMapper">
+		SELECT d.app_key,
+			<!-- CONCAT(s.supplier, '(', s.supplier_code, ')') AS app_key_holder, -->
+			SUM(d.call_count) AS call_count,
+			SUM(d.sucess_call_count) AS sucess_call_count,
+			SUM(d.fail_call_count) AS fail_call_count,
+			MAX(d.max_frequency) AS max_frequency,
+			SUM(d.order_qty) AS order_qty,
+			SUM(d.order_money) AS order_money
+		FROM
+			tbl_merchant_api_analyze_appkey_day d
+		<!-- INNER JOIN tbl_merchant_api_key k ON (d.app_key = k.app_key)
+		INNER JOIN tbl_merchant_api_key_metadata m ON (m.key_id = k.id)
+		INNER JOIN tbl_sp_supplier s ON (s.supplier_code = m.metadata_val)  --> 
+		where 1=1
+		<if test="startTime != null and startTime != ''"> 
+			and d.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00')
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and d.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+		</if>
+		GROUP BY d.app_key
+	</select>
+	
+	<resultMap type="com.yougou.merchant.api.monitor.vo.AnalyzeDetail" id="queryAnalyzeDetailByApiMapper">
+		<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+		<result column="call_count" property="callCount" jdbcType="INTEGER" />
+		<result column="sucess_call_count" property="sucessCallCount" jdbcType="INTEGER" />
+		<result column="fail_call_count" property="failCallCount" jdbcType="INTEGER" />
+		<result column="max_frequency" property="maxFrequency" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="queryAnalyzeDetailByApi" resultMap="queryAnalyzeDetailByApiMapper">
+		SELECT
+			d.app_key,
+			SUM(d.call_count) AS call_count,
+			SUM(d.fail_call_count) AS fail_call_count,
+		  	SUM(d.sucess_call_count) as sucess_call_count,
+		  	MAX(d.call_count) as max_frequency
+		FROM
+			(SELECT
+				de.app_key,
+				de.api_id,
+				CONCAT(substring(de.time_quantum, 1, 13), ':00:00') as time_quantum,
+				SUM(de.call_count) AS call_count,
+				SUM(de.sucess_call_count) AS sucess_call_count,
+				SUM(de.fail_call_count) AS fail_call_count,
+				SUM(de.valid_call_count) AS valid_call_count,
+				SUM(de.avg_ex_time) AS avg_ex_time
+			FROM
+				tbl_merchant_api_analyze_detail de 
+			where de.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00')
+			and de.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+			GROUP BY de.app_key,de.api_id,substring(de.time_quantum, 1, 13)) d
+		WHERE 1 = 1
+		and d.api_id = #{apiId, jdbcType=VARCHAR}
+		<if test="appKeys != null and appKeys.size() > 0">
+			and d.app_key in 
+			<foreach collection="appKeys" item="appKeys" open="(" separator="," close=")">
+				#{appKeys}
+			</foreach>
+		</if>
+		group by d.app_key
+	</select>
+	
+	
+	<resultMap type="com.yougou.merchant.api.monitor.vo.AnalyzeDetail" id="queryAnalyzeDetailByAppKeyMapper">
+		<result column="api_id" property="apiId" jdbcType="VARCHAR" />
+		<result column="api_name" property="apiName" jdbcType="VARCHAR" />
+		<result column="call_count" property="callCount" jdbcType="INTEGER" />
+		<result column="sucess_call_count" property="sucessCallCount" jdbcType="INTEGER" />
+		<result column="fail_call_count" property="failCallCount" jdbcType="INTEGER" />
+		<result column="max_frequency" property="maxFrequency" jdbcType="INTEGER" />
+		<result column="avg_ex_time" property="avgExTime" jdbcType="DOUBLE" />
+	</resultMap>
+	<select id="queryAnalyzeDetailByAppKey" resultMap="queryAnalyzeDetailByAppKeyMapper">
+		SELECT
+			d.api_id,
+			CONCAT(a.api_name, '(', a.api_method, ')') AS api_name,
+			SUM(d.call_count) AS call_count,
+			SUM(d.fail_call_count) AS fail_call_count,
+			SUM(d.sucess_call_count) AS sucess_call_count,
+			MAX(d.call_count) AS max_frequency,
+			AVG(d.avg_ex_time) AS avg_ex_time
+		FROM
+			(SELECT
+				de.app_key,
+				de.api_id,
+				CONCAT(substring(de.time_quantum, 1, 13), ':00:00') as time_quantum,
+				SUM(de.call_count) AS call_count,
+				SUM(de.sucess_call_count) AS sucess_call_count,
+				SUM(de.fail_call_count) AS fail_call_count,
+				SUM(de.valid_call_count) AS valid_call_count,
+				SUM(de.avg_ex_time) AS avg_ex_time
+			FROM
+				tbl_merchant_api_analyze_detail de 
+			where de.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00')
+			and de.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+			GROUP BY de.app_key,de.api_id,substring(de.time_quantum, 1, 13)) d
+		INNER JOIN tbl_merchant_api a ON (d.api_id = a.id)
+		WHERE 1 = 1
+		AND d.app_key = #{appKey, jdbcType=VARCHAR}
+		<if test="apiId != null and apiId != ''">
+			AND d.api_id = #{apiId, jdbcType=VARCHAR}
+		</if>
+		GROUP BY d.api_id
+	</select>
+	
+	<!-- 趋势分析 -->
+	<resultMap type="com.yougou.merchant.api.monitor.vo.AnalyzeInterface" id="trendAnalysisByApiMapper">
+		<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+		<result column="call_count" property="callCount" jdbcType="INTEGER" />
+		<result column="sucess_call_count" property="sucessCallCount" jdbcType="INTEGER" />
+		<result column="fail_call_count" property="failCallCount" jdbcType="INTEGER" />
+		<result column="max_frequency" property="maxFrequency" jdbcType="INTEGER" />
+		<result column="avg_frequency" property="avgFrequency" jdbcType="INTEGER" />
+		<result column="max_appkey_nums" property="maxAppkeyNums" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="queryTrendAnalysis" resultMap="trendAnalysisByApiMapper">
+		SELECT
+			substring(t.time_quantum, 1, <if test="sign == 1">10</if><if test="sign == 0">19</if>) AS time_quantum,
+			SUM(t.call_count) AS call_count,
+			SUM(t.sucess_call_count) AS sucess_call_count,
+			SUM(t.fail_call_count) AS fail_call_count,
+			MAX(t.call_count) AS max_frequency,
+			SUM(t.call_count)/count(t.app_key) as avg_frequency,
+			MAX(t.max_appkey_nums) AS max_appkey_nums
+		FROM
+			tbl_merchant_api_analyze_appkey t
+		WHERE 1=1
+		AND	t.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00') 
+		AND t.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+		GROUP BY substring(t.time_quantum, 1, <if test="sign == 1">10</if><if test="sign == 0">19</if>)	
+	</select>
+	
+	<!-- API接口调用趋势分析 -->
+	<select id="queryTrendAnalysisByApi" resultMap="trendAnalysisByApiMapper">
+		SELECT
+			substring(t.time_quantum, 1, <if test="sign == 1">10</if><if test="sign == 0">19</if>) AS time_quantum,
+			SUM(t.call_count) AS call_count,
+			SUM(t.sucess_call_count) AS sucess_call_count,
+			SUM(t.fail_call_count) AS fail_call_count,
+			MAX(t.call_count) AS max_frequency,
+		    SUM(t.call_count)/count(t.app_key) as avg_frequency,
+			0 AS max_appkey_nums
+		from (
+			SELECT
+				CONCAT(substring(d.time_quantum, 1, 13), ':00:00') as time_quantum,
+				d.app_key,
+				SUM(d.call_count) AS call_count,
+				SUM(d.fail_call_count) AS fail_call_count,
+				SUM(d.sucess_call_count) sucess_call_count
+			FROM
+				tbl_merchant_api_analyze_detail d
+			WHERE
+				d.api_id = #{apiId, jdbcType=VARCHAR}
+			<if test="appKeys != null and appKeys.size() > 0">
+				and d.app_key in 
+				<foreach collection="appKeys" item="appKeys" open="(" separator="," close=")">
+					#{appKeys}
+				</foreach>
+			</if>
+			AND d.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00')
+			AND d.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+			GROUP BY substring(d.time_quantum, 1, 13), d.app_key) t
+		GROUP BY substring(t.time_quantum, 1, <if test="sign == 1">10</if><if test="sign == 0">19</if>)	
+	</select>
+	
+	
+	<resultMap type="com.yougou.merchant.api.monitor.vo.AnalyzeInterface" id="trendAnalysisByAppKeyMapper">
+		<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+		<result column="call_count" property="callCount" jdbcType="INTEGER" />
+		<result column="sucess_call_count" property="sucessCallCount" jdbcType="INTEGER" />
+		<result column="fail_call_count" property="failCallCount" jdbcType="INTEGER" />
+		<result column="max_frequency" property="maxFrequency" jdbcType="INTEGER" />
+		<result column="avg_ex_time" property="avgExTime" jdbcType="DOUBLE" />
+	</resultMap>
+	<!-- appKey调用趋势分析 -->
+	<select id="queryTrendAnalysisByAppKey" resultMap="trendAnalysisByAppKeyMapper">		
+		SELECT
+			substring(t.time_quantum, 1, <if test="sign == 1">10</if><if test="sign == 0">19</if>) AS time_quantum,
+			SUM(t.call_count) AS call_count,
+			SUM(t.sucess_call_count) AS sucess_call_count,
+			SUM(t.fail_call_count) AS fail_call_count,
+			MAX(t.call_count) AS max_frequency,
+			SUM(t.avg_ex_time)/SUM(t.call_count) AS avg_ex_time
+		from (
+			SELECT
+				CONCAT(substring(d.time_quantum, 1, 13), ':00:00') as time_quantum,
+				SUM(d.call_count) AS call_count,
+				SUM(d.fail_call_count) AS fail_call_count,
+				SUM(d.sucess_call_count) sucess_call_count,
+				SUM(d.avg_ex_time) AS avg_ex_time
+			FROM
+				tbl_merchant_api_analyze_detail d
+			WHERE
+				d.app_key = #{appKey, jdbcType=VARCHAR}
+			<if test="apiId != null and apiId != ''">
+				AND d.api_id = #{apiId, jdbcType=VARCHAR}
+			</if>
+			AND d.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00')
+			AND d.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+			GROUP BY substring(d.time_quantum, 1, 13)) t
+		group by substring(t.time_quantum, 1, <if test="sign == 1">10</if><if test="sign == 0">19</if>)	
+	</select>
+	
+	<!-- 定时汇总 -->
+	<resultMap type="com.yougou.merchant.api.monitor.vo.AnalyzeAppkey" id="summary2AppKeyForHoursMapper">
+		<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+		<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+		<result column="call_count" property="callCount" jdbcType="INTEGER" />
+		<result column="sucess_call_count" property="sucessCallCount" jdbcType="INTEGER" />
+		<result column="fail_call_count" property="failCallCount" jdbcType="INTEGER" />
+		<result column="valid_call_count" property="validCallCount" jdbcType="INTEGER" />
+		<result column="avg_ex_time" property="avgExTime" jdbcType="DOUBLE" />
+	</resultMap>
+	<select id="summary2AppKeyForHoursJob" resultMap="summary2AppKeyForHoursMapper">
+		SELECT
+			d.app_key,
+			CONCAT(substring(d.time_quantum, 1, 13), ':00:00') as time_quantum,
+			SUM(d.call_count) AS call_count,
+			SUM(d.sucess_call_count) AS sucess_call_count,
+			SUM(d.fail_call_count) AS fail_call_count,
+			SUM(d.valid_call_count) AS valid_call_count,
+			SUM(d.avg_ex_time) AS avg_ex_time
+		FROM
+			tbl_merchant_api_analyze_detail d
+		where d.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00')
+		and d.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+		GROUP BY d.app_key, substring(d.time_quantum, 1, 13)
+	</select>
+	
+	
+	<resultMap type="com.yougou.merchant.api.monitor.vo.AnalyzeInterface" id="summary2ApiForHoursMapper">
+		<result column="api_id" property="apiId" jdbcType="VARCHAR" />
+		<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+		<result column="call_count" property="callCount" jdbcType="INTEGER" />
+		<result column="sucess_call_count" property="sucessCallCount" jdbcType="INTEGER" />
+		<result column="fail_call_count" property="failCallCount" jdbcType="INTEGER" />
+		<result column="valid_call_count" property="validCallCount" jdbcType="INTEGER" />
+		<result column="avg_ex_time" property="avgExTime" jdbcType="DOUBLE" />
+	</resultMap>
+	<select id="summary2ApiForHoursJob" resultMap="summary2ApiForHoursMapper">
+		SELECT
+			d.api_id,
+			CONCAT(substring(d.time_quantum, 1, 13), ':00:00') as time_quantum,
+			SUM(d.call_count) AS call_count,
+			SUM(d.sucess_call_count) AS sucess_call_count,
+			SUM(d.fail_call_count) AS fail_call_count,
+			SUM(d.valid_call_count) AS valid_call_count,
+			SUM(d.avg_ex_time) AS avg_ex_time
+		FROM
+			tbl_merchant_api_analyze_detail d
+		where d.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00')
+		and d.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+		GROUP BY d.api_id, substring(d.time_quantum, 1, 13)
+	</select>
+	
+	
+	<resultMap type="com.yougou.merchant.api.monitor.vo.AnalyzeAppkeyDay" id="summary2AppKeyForDaysMapper">
+		<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+		<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+		<result column="call_count" property="callCount" jdbcType="INTEGER" />
+		<result column="sucess_call_count" property="sucessCallCount" jdbcType="INTEGER" />
+		<result column="fail_call_count" property="failCallCount" jdbcType="INTEGER" />
+		<result column="valid_call_count" property="validCallCount" jdbcType="INTEGER" />
+		<result column="max_frequency" property="maxFrequency" jdbcType="INTEGER" />
+	</resultMap>
+	<select id="summary2AppKeyForDaysJob" resultMap="summary2AppKeyForDaysMapper">
+		SELECT
+			t.app_key,
+			CONCAT(substring(t.time_quantum, 1, 10), ' 00:00:00') as time_quantum,
+			SUM(t.call_count) call_count,
+			SUM(t.sucess_call_count) sucess_call_count,
+			SUM(fail_call_count) AS fail_call_count,
+			SUM(t.valid_call_count) AS valid_call_count,
+			MAX(t.call_count) AS max_frequency
+		FROM
+			tbl_merchant_api_analyze_appkey t
+		where t.time_quantum <![CDATA[ >= ]]> CONCAT(#{startTime, jdbcType=VARCHAR},' 00:00:00')
+		and t.time_quantum <![CDATA[ <= ]]> CONCAT(#{endTime, jdbcType=VARCHAR},' 23:59:59')
+		GROUP BY t.app_key, substring(t.time_quantum, 1, 10)
+	</select>
+	
+	<!-- 当天的统计数据 -->
+	<select id="queryApiIntegerGeneralForToday" resultMap="queryApiIntegerGeneralMapper">
+		SELECT
+			t.api_id,
+			CONCAT(a.api_name, '(', a.api_method, ')') AS api_name,
+			SUM(t.call_count) AS call_count,
+			SUM(t.sucess_call_count) AS sucess_call_count,
+			SUM(t.fail_call_count) AS fail_call_count,
+			AVG(t.avg_ex_time) AS avg_ex_time,
+			0 AS max_appkey_nums,
+			MAX(t.call_count) AS max_frequency
+		FROM
+			(
+				SELECT
+					d.api_id,
+					CONCAT(substring(d.time_quantum, 1, 13), ':00:00') as time_quantum,
+					SUM(d.call_count) AS call_count,
+					SUM(d.sucess_call_count) AS sucess_call_count,
+					SUM(d.fail_call_count) AS fail_call_count,
+					SUM(d.valid_call_count) AS valid_call_count,
+					SUM(d.avg_ex_time) AS avg_ex_time
+				FROM
+					tbl_merchant_api_analyze_detail d
+				WHERE d.time_quantum >= CONCAT(DATE_FORMAT(now(), '%Y-%m-%d'),' 00:00:00')
+				GROUP BY d.api_id, substring(d.time_quantum, 1, 13)) t
+		INNER JOIN tbl_merchant_api a ON (t.api_id = a.id)
+		GROUP BY t.api_id
+	</select>
+	
+	<select id="queryAppKeyGeneralForToday" resultMap="queryAppKeyGeneralMapper">
+		SELECT t.app_key,
+			SUM(t.call_count) AS call_count,
+			SUM(t.sucess_call_count) AS sucess_call_count,
+			SUM(t.fail_call_count) AS fail_call_count,
+			MAX(t.call_count) AS max_frequency,
+			0 AS order_qty,
+			0 AS order_money
+		FROM
+			(SELECT
+				d.app_key,
+				CONCAT(substring(d.time_quantum, 1, 13), ':00:00') as time_quantum,
+				SUM(d.call_count) AS call_count,
+				SUM(d.sucess_call_count) AS sucess_call_count,
+				SUM(d.fail_call_count) AS fail_call_count,
+				SUM(d.valid_call_count) AS valid_call_count,
+				SUM(d.avg_ex_time) AS avg_ex_time
+			FROM
+				tbl_merchant_api_analyze_detail d
+			where d.time_quantum >= CONCAT(DATE_FORMAT(now(), '%Y-%m-%d'),' 00:00:00')
+			GROUP BY d.app_key, substring(d.time_quantum, 1, 13)) t
+		GROUP BY t.app_key
+	</select>
+	
+	<select id="queryTrendAnalysisForToday" resultMap="trendAnalysisByApiMapper">
+		SELECT
+			substring(t.time_quantum, 1, <if test="sign == 1">10</if><if test="sign == 0">19</if>) AS time_quantum,
+			SUM(t.call_count) AS call_count,
+			SUM(t.sucess_call_count) AS sucess_call_count,
+			SUM(t.fail_call_count) AS fail_call_count,
+			MAX(t.call_count) AS max_frequency,
+			SUM(t.call_count)/count(t.app_key) as avg_frequency,
+			0 AS max_appkey_nums
+		FROM
+			(SELECT
+				d.app_key,
+				CONCAT(substring(d.time_quantum, 1, 13), ':00:00') as time_quantum,
+				SUM(d.call_count) AS call_count,
+				SUM(d.sucess_call_count) AS sucess_call_count,
+				SUM(d.fail_call_count) AS fail_call_count,
+				SUM(d.valid_call_count) AS valid_call_count,
+				SUM(d.avg_ex_time) AS avg_ex_time
+			FROM
+				tbl_merchant_api_analyze_detail d
+			where d.time_quantum >= CONCAT(DATE_FORMAT(now(), '%Y-%m-%d'),' 00:00:00')
+			GROUP BY d.app_key, substring(d.time_quantum, 1, 13)) t
+		GROUP BY substring(t.time_quantum, 1, <if test="sign == 1">10</if><if test="sign == 0">19</if>)		
+	</select>
+</mapper>

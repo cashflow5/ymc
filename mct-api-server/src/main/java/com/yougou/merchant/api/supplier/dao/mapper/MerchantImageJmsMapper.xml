@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.MerchantImageJmsMapper" >
+    
+    <resultMap id="ImageMessageMapper" type="com.yougou.merchant.api.supplier.vo.ImageJmsVo" >
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
+        <result column="commodity_no" property="commodityNo" jdbcType="VARCHAR" />
+        <result column="pic_type" property="picType" jdbcType="VARCHAR" />
+        <result column="image_id" property="imageId" jdbcType="VARCHAR" />
+        <result column="pro_desc" property="proDesc" jdbcType="VARCHAR" />
+        <result column="seq_no" property="seqNo" jdbcType="INTEGER" />
+        <result column="url_fragment" property="urlFragment" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="exec_time" property="execTime" jdbcType="INTEGER"/>
+    </resultMap>
+   
+    <insert id="addImageJms" parameterType="com.yougou.merchant.api.supplier.vo.ImageJmsVo">
+     	INSERT INTO tbl_merchant_image_jms(id, merchant_code, commodity_no, pic_type, image_id, pro_desc, seq_no, status, url_fragment, create_time)
+	 	VALUES(#{id}, #{merchantCode}, #{commodityNo}, #{picType}, #{imageId}, #{proDesc}, #{seqNo, jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{urlFragment}, now())
+  	</insert>
+  
+    <select id="queryImageJmsList" resultMap="ImageMessageMapper" parameterType="com.yougou.merchant.api.supplier.vo.ImageJmsVo" >
+        SELECT
+			t.id,
+			t.merchant_code,
+			t.commodity_no,
+			t.pic_type,
+			t.image_id,
+			t.pro_desc,
+			t.seq_no,
+			t.status,
+			t.url_fragment,
+			t.create_time,
+			t.update_time,
+			CASE when update_time is NULL then -1 else update_time - t.create_time end as exec_time
+		FROM
+			tbl_merchant_image_jms t
+		WHERE 1=1
+		<include refid="queryImage_where"/>
+		order by t.create_time desc
+    </select>
+    
+    <select id="queryImageJmsListByIds" resultMap="ImageMessageMapper">
+        SELECT
+			t.id,
+			t.merchant_code,
+			t.commodity_no,
+			t.pic_type,
+			t.image_id,
+			t.pro_desc,
+			t.seq_no,
+			t.status,
+			t.url_fragment,
+			t.create_time,
+			t.update_time
+		FROM
+			tbl_merchant_image_jms t
+		WHERE t.status=0 and t.id in  
+		<foreach collection="array" item="id"  open="(" separator="," close=")">  
+        	#{id}  
+        </foreach>
+		order by t.create_time asc
+    </select>
+    
+    <select id="queryImageJmsUntreated" resultMap="ImageMessageMapper">
+        SELECT
+			t.id,
+			t.merchant_code,
+			t.commodity_no,
+			t.pic_type,
+			t.image_id,
+			t.pro_desc,
+			t.seq_no,
+			t.status,
+			t.url_fragment,
+			t.create_time,
+			t.update_time
+		FROM
+			tbl_merchant_image_jms t
+		WHERE t.status=0
+		order by t.create_time asc
+    </select>
+    
+    <update id="updateImageJmsStatusInvalid" >
+    	update tbl_merchant_image_jms set status = 2, update_time = now() where status=0 and id in 
+    	<foreach collection="array" item="id"  open="(" separator="," close=")">  
+        	#{id}  
+        </foreach>
+    </update>
+    
+    <update id="updateTaobaoItemImgURL" >
+    	update tbl_merchant_taobao_item_img set yougou_url=#{newImgUrl,jdbcType=VARCHAR},yougou_url_thumbnail=#{thumbnailURL,jdbcType=VARCHAR} where num_iid=#{numIid} and url=#{oldImgUrl,jdbcType=VARCHAR}
+    </update>
+    
+    <update id="updateTaobaoItemImgAngle" >
+    	update tbl_merchant_taobao_item set angle_pic=#{anglePic,jdbcType=VARCHAR} where num_iid=#{numIid}
+    </update>
+    
+    <update id="updateTaobaoItemSrcDesc" >
+    	update tbl_merchant_taobao_item set description=#{desc,jdbcType=VARCHAR} where num_iid=#{numIid}
+    </update>
+    
+    <update id="updateTaobaoItemImgDesc" >
+    	update tbl_merchant_taobao_item_extend set yougou_description=#{desc,jdbcType=VARCHAR},check_status=0,default_pic=#{defaultPic,jdbcType=VARCHAR} where num_iid=#{numIid}
+    </update>
+    
+    <delete id="delMessage">
+    	delete from tbl_merchant_image_jms where (status=2 or status=1) and create_time <![CDATA[<]]> subdate(now(), INTERVAL 7 DAY)
+    </delete>
+    
+    <select id="queryImageJmsCount" resultType="int" parameterType="com.yougou.merchant.api.supplier.vo.ImageJmsVo">
+    	SELECT
+			count(1) 
+		FROM
+			tbl_merchant_image_jms t
+		WHERE 1=1
+		<include refid="queryImage_where"/>
+    </select>
+    
+    <sql id="queryImage_where">
+    	<if test="id != null and id != ''">
+			AND	t.id = #{id,jdbcType=VARCHAR}
+		</if>
+		<if test="commodityNo != null and commodityNo != ''">
+			AND t.commodity_no = #{commodityNo,jdbcType=VARCHAR}
+		</if>
+		<if test="merchantCode != null and merchantCode != ''">
+			AND t.merchant_code = #{merchantCode,jdbcType=VARCHAR}
+		</if>
+		<if test="picType != null">
+			AND t.pic_type = #{picType,jdbcType=INTEGER}
+		</if>
+		<if test="status != null">
+			AND t.status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			AND t.create_time <![CDATA[ >= ]]> #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND t.create_time <![CDATA[ <= ]]> #{endTime}
+		</if>
+    </sql>
+    
+    <update id="updateImageJmsStatus"  parameterType="com.yougou.merchant.api.supplier.vo.ImageJmsVo">
+    	update tbl_merchant_image_jms set status = #{status,jdbcType=INTEGER}, update_time = now() where id = #{id,jdbcType=VARCHAR}
+    </update>
+    
+    <update id="updateTaobaoItemImgURLBatch" parameterType="java.util.List">
+    	<foreach collection="list" item="item" index="index" open="" close="" separator=";">
+	            update tbl_merchant_taobao_item_img 
+	            <set>
+	                yougou_url=#{item.newImageURL,jdbcType=VARCHAR},
+	                yougou_url_thumbnail=#{item.thumbnailImageURL,jdbcType=VARCHAR} 
+	            </set>
+	            <where>
+	            	 url=#{item.oldImageURL,jdbcType=VARCHAR} and num_iid=#{item.numIid}
+	            </where>
+         </foreach>
+    </update>
+</mapper>

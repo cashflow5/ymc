@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.LimitCatAndBrandMapper" >
+    
+    <resultMap id="brandVoMapper" type="com.yougou.merchant.api.supplier.vo.BrandVo" >
+    	<result column="id" property="id" jdbcType="VARCHAR" />    
+        <result column="supply_id" property="supplyId" jdbcType="VARCHAR" />
+        <result column="brand_no" property="brandNo" jdbcType="VARCHAR" />
+    </resultMap>
+    
+	<select id="queryLimitBrandBysupplyId" resultMap="brandVoMapper" parameterType="list">
+		select t.id, t.supply_id, t.brand_no from tbl_sp_limit_brand t where t.supply_id in
+        <foreach index="index" item="item" collection="list" open="(" separator="," close=")">
+        	#{item}
+        </foreach>
+	</select>
+	<insert id="insertBrandVo" parameterType="com.yougou.merchant.api.supplier.vo.BrandVo">
+		INSERT INTO tbl_sp_limit_brand (id, supply_id, brand_no)
+		VALUES
+			(#{id}, #{supplyId}, #{brandNo})
+	</insert>
+	
+	<delete id="deleteBrandById" parameterType="list">
+		delete from tbl_sp_limit_brand where id in
+        <foreach index="index" item="item" collection="list" open="(" separator="," close=")">
+        	#{item}
+        </foreach>
+	</delete>
+	
+	<delete id="deleteBrandBySupplyId" parameterType="java.lang.String">
+		delete from tbl_sp_limit_brand where supply_id = #{supplyId, jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertCatVo" parameterType="com.yougou.merchant.api.supplier.vo.CatVo">
+		INSERT INTO tbl_sp_limit_cat (
+			id,
+			supply_id,
+			cat_no,
+			struct_name
+		)
+		VALUES
+			(
+			#{id},
+			#{supplyId},
+			#{catNo},
+			#{structName}
+			)
+	</insert>
+	
+	<delete id="deleteCatById" parameterType="list">
+		delete from tbl_sp_limit_cat where id in
+        <foreach index="index" item="item" collection="list" open="(" separator="," close=")">
+        	#{item}
+        </foreach>
+	</delete>
+	
+	<delete id="deleteCatBySupplyId" parameterType="java.lang.String">
+		delete from tbl_sp_limit_cat where supply_id = #{supplyId, jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 品牌分类授权关系 -->
+	<insert id="insertBrandCatRelation" parameterType="com.yougou.merchant.api.supplier.vo.BrandCatRelation">
+		INSERT INTO tbl_sp_limit_brand_cat (id, brand_id, cat_id)
+		VALUES
+			(#{id}, #{brandId}, #{catId})
+	</insert>
+	
+	<delete id="deleteBrandCatRelationById" parameterType="list">
+		delete from tbl_sp_limit_brand_cat where id in
+        <foreach index="index" item="item" collection="list" open="(" separator="," close=")">
+        	#{item}
+        </foreach>
+	</delete>
+	
+	<resultMap type="com.yougou.merchant.api.supplier.vo.CatVo" id="brandcatRelationMapper">
+		<result column="cat_id" property="id" jdbcType="VARCHAR" />
+		<result column="supply_id" property="supplyId" jdbcType="VARCHAR" />    
+		<result column="cat_no" property="catNo" jdbcType="VARCHAR" />
+		<result column="struct_name" property="structName" jdbcType="VARCHAR" />    
+		<result column="brand_id" property="brandId" jdbcType="VARCHAR" />   
+		<result column="brand_no" property="brandNo" jdbcType="VARCHAR" /> 
+		<result column="relation_id" property="relationId" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="queryBrandCatRelationBysupplyId" resultMap="brandcatRelationMapper" parameterType="java.lang.String">
+		SELECT
+			bc.id AS relation_id,
+			bc.brand_id,
+			bc.cat_id,
+			b.brand_no,
+			c.cat_no,
+			c.struct_name,
+			c.supply_id
+		FROM
+			tbl_sp_limit_brand_cat bc
+		LEFT JOIN tbl_sp_limit_brand b ON (bc.brand_id = b.id)
+		LEFT JOIN tbl_sp_limit_cat c ON (bc.cat_id = c.id)
+		WHERE
+			b.supply_id = #{supplyId, jdbcType=VARCHAR}
+		AND c.supply_id = #{supplyId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getBrandNosByMerchantCode" parameterType="java.lang.String" resultType="map">
+		SELECT
+			a.brand_no
+		FROM
+			tbl_sp_limit_brand a,
+			tbl_sp_supplier b
+		WHERE
+			a.supply_id = b.id
+		AND b.is_valid = 1
+		AND b.supplier_type = '招商供应商'
+		AND b.supplier_code = #{merchantCode, jdbcType=VARCHAR}
+	</select>
+	<select id="getCategoryNosByMerchantCode" parameterType="java.lang.String" resultType="map">
+		SELECT
+			a.cat_no
+		FROM
+			tbl_sp_limit_cat a,
+			tbl_sp_supplier b
+		WHERE
+			a.supply_id = b.id
+		AND b.is_valid = 1
+		AND b.supplier_type = '招商供应商'
+		AND b.supplier_code = #{merchantCode, jdbcType=VARCHAR}
+	</select>
+	
+	<resultMap type="com.yougou.merchant.api.supplier.vo.CatVo" id="catMapper">
+		<result column="cat_id" property="id" jdbcType="VARCHAR" />
+		<result column="supply_id" property="supplyId" jdbcType="VARCHAR" />    
+		<result column="cat_no" property="catNo" jdbcType="VARCHAR" />
+		<result column="struct_name" property="structName" jdbcType="VARCHAR" />    
+	</resultMap>
+	<select id="getCategoryBySupplyId" resultMap="catMapper" resultType="java.lang.String">
+		select c.id, c.cat_no, c.struct_name, c.supply_id from tbl_sp_limit_cat c where c.supply_id = #{supplyId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getMerchantByCatNo" parameterType="java.lang.String" resultType="map">
+		select distinct b.supplier_code as merchantCode, b.supplier as supplierName from tbl_sp_limit_cat a, tbl_sp_supplier b where a.supply_id=b.id and b.is_valid=1 and b.supplier_type="招商供应商" and a.cat_no=#{catNo}
+	</select>
+</mapper>

@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.monitor.dao.MonitorMapper">
+    <!-- API监控配置 -->
+    <resultMap id="monitorMapper" type="com.yougou.merchant.api.monitor.vo.MonitorConfig">    
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="config_name" property="configName" jdbcType="VARCHAR" />
+        <result column="config_key" property="configKey" jdbcType="VARCHAR" />
+        <result column="config_value" property="configValue" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="delete_flag" property="deleteFlag" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+	
+	<sql id="queryMonitor_all_columns">
+			id,
+			config_name,
+			config_key,
+			config_value,
+			remark,
+			delete_flag,
+			create_time,
+			update_time
+	</sql>
+	
+	<insert id="insertMonitorConfig" parameterType="com.yougou.merchant.api.monitor.vo.MonitorConfig">
+		INSERT INTO tbl_merchant_api_monitor_config (
+			<include refid="queryMonitor_all_columns"/>
+		)
+		VALUES
+			(
+			#{id},
+			#{configName},
+			#{configKey},
+			#{configValue},
+			#{remark},
+			#{deleteFlag},
+			#{createTime},
+			#{updateTime}
+			)
+	</insert>
+	<update id="updateMonitorConfig" parameterType="com.yougou.merchant.api.monitor.vo.MonitorConfig">
+		UPDATE tbl_merchant_api_monitor_config
+		SET config_name = #{configName},
+			config_key = #{configKey},
+			config_value = #{configValue},
+			remark = #{remark},
+			delete_flag = #{deleteFlag},
+			update_time = #{updateTime}
+		where id = #{id, jdbcType=VARCHAR}
+	</update>
+	<select id="getMonitorConfigById" resultMap="monitorMapper" parameterType="java.lang.String">
+		select <include refid="queryMonitor_all_columns"/> 
+		from tbl_merchant_api_monitor_config c where c.id = #{id, jdbcType=VARCHAR}
+	</select>
+	<select id="getMonitorConfigByKey" resultMap="monitorMapper" parameterType="java.lang.String">
+		select <include refid="queryMonitor_all_columns"/> 
+		from tbl_merchant_api_monitor_config c where c.config_key = #{configKey, jdbcType=VARCHAR}
+	</select>
+	<select id="queryMonitorConfigList" resultMap="monitorMapper">
+		select <include refid="queryMonitor_all_columns"/> 
+		from tbl_merchant_api_monitor_config c where c.delete_flag = '1'
+	</select>
+	
+	<!-- 监控模板 -->
+	<resultMap type="com.yougou.merchant.api.monitor.vo.MonitorTemplate" id="templateMapper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="template_no" property="templateNo" jdbcType="VARCHAR" />
+		<result column="template_name" property="templateName" jdbcType="VARCHAR" />
+		<result column="template_desc" property="templateDesc" jdbcType="VARCHAR" />
+		<result column="reference_type" property="referenceType" jdbcType="INTEGER" />
+		<result column="is_default" property="isDefault" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="monitorTemplate_columns_sql">
+		id,
+			template_no,
+			template_name,
+			template_desc,
+			create_time,
+			update_time,
+			reference_type,
+			is_default
+	</sql>
+	<sql id="monitorTemplateDetail_columns_sql">
+			id,
+			template_no,
+			api_id,
+			frequency,
+			frequency_unit,
+			call_num,
+			is_frequency,
+			is_call_num,
+			create_time,
+			update_time
+	</sql>
+	<insert id="insertTemplate" parameterType="com.yougou.merchant.api.monitor.vo.MonitorTemplate">
+		INSERT INTO tbl_merchant_api_monitor_template (
+			<include refid="monitorTemplate_columns_sql"/>
+		)
+		VALUES
+			(
+			#{id},
+			#{templateNo},
+			#{templateName},
+			#{templateDesc},
+			#{createTime},
+			#{updateTime},
+			#{referenceType},
+			#{isDefault}
+			)
+	</insert>
+	<update id="updateTemplate" parameterType="com.yougou.merchant.api.monitor.vo.MonitorTemplate">
+		update tbl_merchant_api_monitor_template 
+		set template_no = #{templateNo},
+			template_name = #{templateName},
+			template_desc = #{templateDesc},
+			reference_type = #{referenceType},
+			update_time = #{updateTime}
+		where id = #{id, jdbcType=VARCHAR}
+	</update>
+	<select id="queryMonitorTemplate" resultMap="templateMapper" parameterType="com.yougou.merchant.api.monitor.vo.MonitorTemplate">
+		select <include refid="monitorTemplate_columns_sql"/> 
+		from tbl_merchant_api_monitor_template t
+		where 1=1
+		<include refid="queryMonitor_where"/>
+		order by t.template_no
+	</select>
+	<select id="queryMonitorTemplateCount" resultType="int" parameterType="com.yougou.merchant.api.monitor.vo.MonitorTemplate">
+		select count(*)
+		from tbl_merchant_api_monitor_template t
+		where 1=1
+		<include refid="queryMonitor_where"/>
+	</select>
+	
+	<select id="queryMonitorTemplateByNoORName" resultMap="templateMapper" parameterType="com.yougou.merchant.api.monitor.vo.MonitorTemplate">
+		select <include refid="monitorTemplate_columns_sql"/> 
+		from tbl_merchant_api_monitor_template t
+		where t.reference_type=1
+		<include refid="queryMonitorTemplateByNoORNameCount_where"/>
+		order by t.create_time desc
+	</select>
+	<select id="queryMonitorTemplateByNoORNameCount" resultType="int" parameterType="com.yougou.merchant.api.monitor.vo.MonitorTemplate">
+		select count(*)
+		from tbl_merchant_api_monitor_template t
+		where t.reference_type=1
+		<include refid="queryMonitorTemplateByNoORNameCount_where"/>
+	</select>
+    <sql id="queryMonitorTemplateByNoORNameCount_where">
+		<if test="templateNo != null and templateNo != ''">
+		   and (t.template_no like #{templateNo, jdbcType=VARCHAR}
+		</if>
+		<if test="templateName != null and templateName != ''">
+			or t.template_name like #{templateName, jdbcType=VARCHAR})
+		</if>
+    </sql>
+	<sql id="queryMonitor_where">
+		<if test="id != null and id != ''">
+			and t.id = #{id, jdbcType=VARCHAR}
+		</if>
+		<if test="templateNo != null and templateNo != ''">
+			and t.template_no = #{templateNo, jdbcType=VARCHAR}
+		</if>
+		<if test="referenceType != null">
+			and t.reference_type = #{referenceType, jdbcType=INTEGER}
+		</if>
+		<if test="templateName != null and templateName != ''">
+			and t.template_name = #{templateName, jdbcType=VARCHAR}
+		</if>
+		<if test="isDefault != null">
+			and t.is_default = #{isDefault}
+		</if>
+	</sql>
+	
+	
+	<insert id="insertTemplateDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorTemplateDetail">
+		INSERT INTO tbl_merchant_api_monitor_template_detail (
+			id,
+			template_no,
+			api_id,
+			frequency,
+			frequency_unit,
+			call_num,
+			is_frequency,
+			is_call_num,
+			create_time,
+			update_time
+		)
+		VALUES
+			(
+			#{id},
+			#{templateNo},
+			#{apiId},
+			#{frequency},
+			#{frequencyUnit},
+			#{callNum},
+			#{isFrequency},
+			#{isCallNum},
+			#{createTime},
+			#{updateTime}
+			)
+	</insert>
+	<update id="updateTemplateDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorTemplateDetail">
+		update tbl_merchant_api_monitor_template_detail 
+		set template_no = #{templateNo},
+			api_id = #{apiId},
+			frequency = #{frequency},
+			frequency_unit = #{frequencyUnit},
+			call_num = #{callNum},
+			is_frequency = #{isFrequency},
+			is_call_num = #{isCallNum},
+			update_time = #{updateTime}
+		where id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="insertAppKeyTemplate" parameterType="com.yougou.merchant.api.monitor.vo.MonitorAppKeyTemplate">
+		INSERT INTO tbl_merchant_api_monitor_appkey_template (
+			id,
+			appkey_id,
+			template_no,
+			create_time,
+			update_time
+		)
+		VALUES
+			(
+			#{id},
+			#{appkeyId},
+			#{templateNo},
+			#{createTime},
+			#{updateTime}
+			)
+	</insert>
+	<update id="updateAppKeyTemplate" parameterType="com.yougou.merchant.api.monitor.vo.MonitorAppKeyTemplate">
+		update tbl_merchant_api_monitor_appkey_template 
+		set appkey_id = #{appkeyId},
+			template_no = #{templateNo},
+			update_time = #{updateTime}
+		where id = #{id, jdbcType=VARCHAR}
+	</update>
+	<update id="updateAppKeyTemplateByAppKey" parameterType="com.yougou.merchant.api.monitor.vo.MonitorAppKeyTemplate">
+		update tbl_merchant_api_monitor_appkey_template 
+		set appkey_id = #{appkeyId},
+			template_no = #{templateNo},
+			update_time = #{updateTime}
+		where appkey_id = #{appkeyId, jdbcType=VARCHAR}
+	</update>
+	<select id="queryAppKeyTemplateByAppKey" parameterType="java.lang.String" resultType="int">
+		select count(*) from tbl_merchant_api_monitor_appkey_template
+		where appkey_id = #{appkeyId, jdbcType=VARCHAR}
+	</select>
+	<select id="queryAppKeyTemplateByAppKeyId" parameterType="java.lang.String" resultType="String">
+		select template_no from tbl_merchant_api_monitor_appkey_template
+		where appkey_id = #{appkeyId, jdbcType=VARCHAR}
+	</select>
+	<select id="queryAppKeyTemplate" resultMap="appKeyTemplateMapper">
+		select template_no,appkey_id from tbl_merchant_api_monitor_appkey_template
+	</select>
+	<resultMap type="com.yougou.merchant.api.monitor.vo.MonitorAppKeyTemplate" id="appKeyTemplateMapper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="template_no" property="templateNo" jdbcType="VARCHAR" />
+		<result column="appkey_id" property="appkeyId" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap type="com.yougou.merchant.api.monitor.vo.MonitorTemplateDetail" id="templateDetailMapper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="template_no" property="templateNo" jdbcType="VARCHAR" />
+		<result column="api_id" property="apiId" jdbcType="VARCHAR" />
+		<result column="frequency" property="frequency" jdbcType="INTEGER" />
+		<result column="frequency_unit" property="frequencyUnit" jdbcType="INTEGER" />
+		<result column="call_num" property="callNum" jdbcType="INTEGER" />
+		<result column="is_frequency" property="isFrequency" jdbcType="INTEGER" />
+		<result column="is_call_num" property="isCallNum" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="api_code" property="apiCode" jdbcType="VARCHAR" />
+        <result column="api_name" property="apiName" jdbcType="VARCHAR" />
+        <result column="category_name" property="categoryName" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="queryTemplateDetailList" parameterType="java.lang.String" resultMap="templateDetailMapper">
+		SELECT
+			a.api_code,
+			a.api_name,
+			c.category_name,
+			d.id,
+			d.template_no,
+			d.api_id,
+			d.frequency,
+			d.frequency_unit,
+			d.call_num,
+			d.is_frequency,
+			d.is_call_num,
+			d.create_time,
+			d.update_time
+		FROM
+			tbl_merchant_api_monitor_template_detail d
+		INNER JOIN tbl_merchant_api a ON (d.api_id = a.id)
+		LEFT JOIN tbl_merchant_api_category c ON (a.category_id = c.id)
+		WHERE
+			d.template_no = #{templateNo, jdbcType=VARCHAR}
+	</select>
+	<select id="queryTemplateDetailPage" parameterType="java.lang.String" resultMap="templateDetailMapper">
+		SELECT
+			a.api_code,
+			a.api_name,
+			c.category_name,
+			d.id,
+			d.template_no,
+			d.api_id,
+			d.frequency,
+			d.frequency_unit,
+			d.call_num,
+			d.is_frequency,
+			d.is_call_num,
+			d.create_time,
+			d.update_time
+		FROM
+			tbl_merchant_api_monitor_template_detail d
+		INNER JOIN tbl_merchant_api a ON (d.api_id = a.id)
+		LEFT JOIN tbl_merchant_api_category c ON (a.category_id = c.id)
+		WHERE
+			d.template_no = #{templateNo, jdbcType=VARCHAR}
+	</select>
+	<select id="queryTemplateDetailCount" resultType="int" parameterType="java.lang.String">
+		select count(*)
+		from tbl_merchant_api_monitor_template_detail t
+		where t.template_no = #{templateNo}
+	</select>
+	<!-- IP黑名单 -->
+	<insert id="insertIpBlackList" parameterType="com.yougou.merchant.api.monitor.vo.MonitorIpBlackList">
+		INSERT INTO tbl_merchant_api_monitor_ip_blacklist (
+			id,
+			ip,
+			reason,
+			operator,
+			delete_fag,
+			create_time,
+			update_time
+		)
+		VALUES
+			(
+			#{id},
+			#{ip},
+			#{reason},
+			#{operator},
+			#{deleteFag},
+			#{createTime},
+			#{updateTime}
+			)
+	</insert>
+	<update id="updateIpBlackList" parameterType="com.yougou.merchant.api.monitor.vo.MonitorIpBlackList">
+		update tbl_merchant_api_monitor_ip_blacklist 
+		set 
+			<if test="reason != null and reason != ''">
+				reason = #{reason},
+			</if>
+			<if test="operator != null and operator != ''">
+				operator = #{operator},
+			</if>
+			<if test="deleteFag != null">
+				delete_fag = #{deleteFag},
+			</if>
+			update_time = #{updateTime}
+		where id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<resultMap type="com.yougou.merchant.api.monitor.vo.MonitorIpBlackList" id="blackListIpMapper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="ip" property="ip" jdbcType="VARCHAR" />
+		<result column="reason" property="reason" jdbcType="VARCHAR" />
+		<result column="operator" property="operator" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<select id="queryMonitorIpBlackList" resultMap="blackListIpMapper">
+		SELECT
+			t.ip,
+			t.reason,
+			t.create_time,
+			t.update_time,
+			t.operator,
+			t.id
+		FROM
+			tbl_merchant_api_monitor_ip_blacklist t
+		WHERE t.delete_fag=1 
+		<include refid="queryMonitorIpBlacklist_where"/>
+	</select>
+	<select id="queryMonitorIpBlackListCount" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			tbl_merchant_api_monitor_ip_blacklist t
+		WHERE t.delete_fag=1 
+		<include refid="queryMonitorIpBlacklist_where"/>
+	</select>
+	<sql id="queryMonitorIpBlacklist_where">
+		<if test="ip != null and ip != ''">
+			AND	t.ip = #{ip, jdbcType=VARCHAR}	
+		</if>
+		<if test="startTime != null and startTime != ''">
+			AND t.create_time <![CDATA[ >= ]]> #{startTime, jdbcType=VARCHAR}	
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND t.create_time <![CDATA[ <= ]]> #{endTime, jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- API锁定 -->
+	<resultMap type="com.yougou.merchant.api.monitor.vo.MonitorLock" id="monitorLockMapper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+		<result column="lock_hour" property="lockHour" jdbcType="INTEGER" />
+		<result column="lock_status" property="lockStatus" jdbcType="INTEGER" />
+		<result column="lock_time" property="lockTime" jdbcType="TIMESTAMP" />
+		<result column="lock_type" property="lockType" jdbcType="INTEGER" />
+		<result column="unlock_time" property="unlockTime" jdbcType="TIMESTAMP" />
+		<result column="app_key_holder" property="appKeyHolder" jdbcType="VARCHAR" />
+		<result column="api_name" property="apiName" jdbcType="VARCHAR" />
+		<result column="lock_time_str" property="lockTimeStr" jdbcType="VARCHAR" />
+		<result column="remain_lock_time_str" property="remainLockTimeStr" jdbcType="VARCHAR" />
+	</resultMap>
+	<insert id="insertMonitorLock" parameterType="com.yougou.merchant.api.monitor.vo.MonitorLock">
+		INSERT INTO tbl_merchant_api_monitor_lock (
+			id,
+			app_key,
+			api_id,
+			lock_type,
+			lock_time,
+			lock_hour,
+			lock_status,
+			update_time,
+			unlock_time
+		)
+		VALUES
+			(
+			#{id},
+			#{appKey},
+			#{apiId},
+			#{lockType},
+			#{lockTime},
+			#{lockHour},
+			#{lockStatus},
+			#{updateTime},
+			#{unlockTime}
+			)
+	</insert>
+	<update id="updateMonitorLock" parameterType="com.yougou.merchant.api.monitor.vo.MonitorLock">
+		update tbl_merchant_api_monitor_lock 
+		set 
+			<if test="lockStatus != null">
+				lock_status = #{lockStatus},
+			</if>
+			<if test="unlockTime != null">
+				unlock_time = #{unlockTime},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser},
+			</if>
+			update_time = #{updateTime}
+		where id = #{id, jdbcType=VARCHAR}
+	</update>
+	<select id="queryMonitorLockByObj" parameterType="com.yougou.merchant.api.monitor.vo.MonitorLock" resultMap="monitorLockMapper">
+		<![CDATA[
+		SELECT
+			t.id,
+			t.app_key,
+			t.lock_hour,
+			CASE when t.unlock_time > NOW() THEN t.lock_status WHEN t.unlock_time <= NOW() THEN 0 ELSE t.lock_status end as lock_status,
+			t.lock_time,
+			t.lock_type,
+			t.unlock_time,
+			CONCAT(s.supplier, '(',	s.supplier_code, ')') AS app_key_holder,
+			a.api_method AS api_name,
+			CASE when t.unlock_time > NOW() THEN TIMEDIFF(NOW(), t.lock_time) WHEN t.unlock_time <= NOW() THEN TIMEDIFF(t.unlock_time, t.lock_time) ELSE TIMEDIFF(t.unlock_time, t.lock_time) end as lock_time_str,
+			CASE when t.unlock_time > NOW() THEN TIMEDIFF(t.unlock_time, NOW()) WHEN t.unlock_time <= NOW() THEN '-' ELSE '-' end as remain_lock_time_str 
+		FROM
+			tbl_merchant_api_monitor_lock t
+		INNER JOIN tbl_merchant_api_key k ON (t.app_key = k.app_key)
+		INNER JOIN tbl_merchant_api_key_metadata m ON (m.key_id = k.id)
+		INNER JOIN tbl_sp_supplier s ON (s.supplier_code = m.metadata_val)
+		INNER JOIN tbl_merchant_api a ON (a.id = t.api_id)
+		WHERE m.metadata_key = 'MERCHANTS' 
+		]]>
+		<include refid="queryMonitorLock_where"/> 
+		order by t.unlock_time desc 
+	</select>
+	<select id="queryMonitorLockCount" resultType="int" parameterType="com.yougou.merchant.api.monitor.vo.MonitorLock">
+		SELECT
+			count(*)
+		FROM
+			tbl_merchant_api_monitor_lock t
+		INNER JOIN tbl_merchant_api_key k ON (t.app_key = k.app_key)
+		INNER JOIN tbl_merchant_api_key_metadata m ON (m.key_id = k.id)
+		INNER JOIN tbl_sp_supplier s ON (s.supplier_code = m.metadata_val)
+		INNER JOIN tbl_merchant_api a ON (a.id = t.api_id)
+		WHERE m.metadata_key = 'MERCHANTS' 
+		<include refid="queryMonitorLock_where"/>
+	</select>
+	
+	<sql id="queryMonitorLock_where">
+		<if test="apiId != null and apiId != ''">
+			AND t.api_id = #{apiId, jdbcType=VARCHAR}	
+		</if>
+		<if test="merchantCode != null and merchantCode != ''">
+			AND s.supplier_code = #{merchantCode, jdbcType=VARCHAR}	
+		</if>
+		<if test="lockStatus != null">
+		<![CDATA[
+			AND (CASE when t.unlock_time > NOW() THEN t.lock_status WHEN t.unlock_time <= NOW() THEN 0 ELSE t.lock_status end) = #{lockStatus, jdbcType=VARCHAR}
+		]]>	
+		</if>
+		<if test="lockType != null">
+			AND t.lock_type = #{lockType, jdbcType=VARCHAR}	
+		</if>
+		<if test="startTime != null and startTime != ''">
+			AND t.lock_time <![CDATA[ >= ]]> #{startTime, jdbcType=VARCHAR}	
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND t.lock_time <![CDATA[ <= ]]> #{endTime, jdbcType=VARCHAR}	
+		</if>
+	</sql>
+	<delete id="deleteMonitorTemplateByTemplateNo" parameterType="java.lang.String">
+		delete from tbl_merchant_api_monitor_template where template_no = #{templateNo, jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteMonitorTemplateDetailByTemplateNo" parameterType="java.lang.String">
+		delete from tbl_merchant_api_monitor_template_detail where template_no = #{templateNo, jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteMonitorTemplateDetailById" parameterType="java.lang.String">
+		delete from tbl_merchant_api_monitor_template_detail where id = #{id, jdbcType=VARCHAR}
+	</delete>
+    <select id="queryTemplateList" resultMap="templateMapper">
+		SELECT
+			t.id,
+			t.template_no,
+			t.template_name
+		FROM
+			tbl_merchant_api_monitor_template t
+		WHERE t.reference_type=1
+        ORDER BY t.is_default desc
+	</select>
+	<select id="queryDefaultTemplate" resultType="String">
+		SELECT
+			t.template_no
+		FROM
+			tbl_merchant_api_monitor_template t
+		WHERE t.is_default=1
+	</select>
+	<select id="queryAppKeyIdByAppKey" resultType="String" parameterType="java.lang.String">
+		SELECT
+			t.id
+		FROM
+			tbl_merchant_api_key t
+		WHERE t.app_key = #{app_key, jdbcType=VARCHAR}
+	</select>
+</mapper>

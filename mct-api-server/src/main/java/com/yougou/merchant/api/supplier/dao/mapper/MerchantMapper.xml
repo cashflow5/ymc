@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.MerchantMapper" >
+    <!-- 商家账户 -->
+    <resultMap id="merchantUserMapper" type="com.yougou.merchant.api.supplier.vo.MerchantUser">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="login_name" property="loginName" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="mobile_code" property="mobileCode" jdbcType="VARCHAR" />
+        <result column="creater" property="creater" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="is_administrator" property="isAdministrator" jdbcType="INTEGER" />
+        <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER" />
+        <result column="is_yougou_admin" property="isYougouAdmin" jdbcType="INTEGER" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="emailstatus" property="emailstatus" jdbcType="INTEGER" />
+        <result column="supplier" property="merchantName" jdbcType="VARCHAR" />
+    </resultMap>
+     <resultMap id="merchantBankInfoVo" type="com.yougou.merchant.api.supplier.vo.MerchantBankInfoVo">
+     	<result column="bank" property="bank" jdbcType="VARCHAR" />
+        <result column="sub_bank" property="subBank" jdbcType="VARCHAR" />
+        <result column="account" property="account" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="queryMerchantUserList" resultMap="merchantUserMapper" parameterType="com.yougou.merchant.api.supplier.vo.MerchantUser">
+    	SELECT
+			t.id,
+			t.merchant_code,
+			s.supplier,
+			t.user_name,
+			t.login_name,
+			t.PASSWORD,
+			t.mobile_code,
+			t.creater,
+			t.create_time,
+			t.STATUS,
+			t.remark,
+			t.is_administrator,
+			t.delete_flag,
+			t.is_yougou_admin,
+			t.email,
+			t.emailstatus
+		FROM
+			tbl_merchant_user t LEFT JOIN tbl_sp_supplier s ON (t.merchant_code = s.supplier_code)
+    	WHERE t.delete_flag = 1
+    	<include refid="queryUser_Where"/>
+    	order by t.create_time desc
+    </select>
+    
+     <select id="queryMerchantUserListByQuery" resultMap="merchantUserMapper" >
+    	SELECT
+			t.id,
+			t.merchant_code,
+			<if test="user.isYougouAdmin == null or user.isYougouAdmin ==0 ">
+			s.supplier,
+			</if>
+			t.user_name,
+			t.login_name,
+			t.PASSWORD,
+			t.mobile_code,
+			t.creater,
+			t.create_time,
+			t.STATUS,
+			t.remark,
+			t.is_administrator,
+			t.delete_flag,
+			t.is_yougou_admin,
+			t.email,
+			t.emailstatus
+		FROM
+			tbl_merchant_user t 
+			<if test="user.isYougouAdmin == null or user.isYougouAdmin ==0 ">
+			LEFT JOIN tbl_sp_supplier s ON (t.merchant_code = s.supplier_code)
+			</if>
+    	WHERE t.delete_flag = 1
+    	<if test="user.id != null and user.id != ''">
+    		AND t.id = #{user.id, jdbcType=VARCHAR}
+    	</if>
+    	<if test="user.loginName != null and user.loginName != ''">
+    		AND t.login_name like CONCAT('%', '${user.loginName}', '%')
+    	</if>
+    	<if test="user.merchantCode != null and user.merchantCode != ''">
+    		AND t.merchant_code like CONCAT('${user.merchantCode}', '%')
+    	</if>
+    	<if test="user.userName != null and user.userName != ''">
+    		AND t.user_name like CONCAT('%', '${user.userName}', '%')
+    	</if>
+    	<if test="user.isAdministrator != null">
+    		AND t.is_administrator = #{user.isAdministrator, jdbcType=INTEGER}
+    	</if>
+    	<if test="user.isYougouAdmin != null">
+    		AND t.is_yougou_admin = #{user.isYougouAdmin, jdbcType=INTEGER}
+    	</if>
+    	order by t.create_time desc
+    	limit #{query.offset},#{query.pageSize}
+    </select>
+    																
+    <select id="queryMerchantUserCount" resultType="int" parameterType="com.yougou.merchant.api.supplier.vo.MerchantUser">
+    	SELECT
+			count(*)
+		FROM
+			tbl_merchant_user t
+    	WHERE t.delete_flag = 1
+    	<include refid="queryUser_Where"/>
+    </select>
+    
+    <sql id="queryUser_Where">
+    	<if test="id != null and id != ''">
+    		AND t.id = #{id, jdbcType=VARCHAR}
+    	</if>
+    	<if test="loginName != null and loginName != ''">
+    		AND t.login_name like CONCAT('%', '${loginName}', '%')
+    	</if>
+    	<if test="merchantCode != null and merchantCode != ''">
+    		AND t.merchant_code like CONCAT('${merchantCode}', '%')
+    	</if>
+    	<if test="userName != null and userName != ''">
+    		AND t.user_name like CONCAT('%', '${userName}', '%')
+    	</if>
+    	<if test="isAdministrator != null">
+    		AND t.is_administrator = #{isAdministrator, jdbcType=INTEGER}
+    	</if>
+    	<if test="isYougouAdmin != null">
+    		AND t.is_yougou_admin = #{isYougouAdmin, jdbcType=INTEGER}
+    	</if>
+    </sql>
+    
+    <insert id="insertMerchantUser" parameterType="com.yougou.merchant.api.supplier.vo.MerchantUser">
+    	INSERT INTO tbl_merchant_user (
+			id,
+			merchant_code,
+			user_name,
+			login_name,
+			PASSWORD,
+			mobile_code,
+			creater,
+			create_time,
+			STATUS,
+			remark,
+			delete_flag,
+			<if test="isYougouAdmin != null">
+				is_yougou_admin,	
+			</if>
+			is_administrator,
+			<if test="emailstatus != null">
+				emailstatus,
+			</if>
+			email
+		)
+		VALUES
+			(
+			#{id},
+			#{merchantCode},
+			#{userName},
+			#{loginName},
+			#{password},
+			#{mobileCode},
+			#{creater},
+			#{createTime},
+			#{status},
+			#{remark},
+			#{deleteFlag},
+			<if test="isYougouAdmin != null">
+				#{isYougouAdmin},
+			</if>
+			#{isAdministrator},
+			<if test="emailstatus != null">
+				#{emailstatus},
+			</if>
+			#{email}
+			)
+    </insert>
+    
+    <update id="updateMerchantUser" parameterType="com.yougou.merchant.api.supplier.vo.MerchantUser">
+    	UPDATE 
+    		tbl_merchant_user
+		SET 
+			<if test="userName != null and userName != ''">
+				user_name = #{userName, jdbcType=VARCHAR},
+			</if>
+			<if test="loginName != null and loginName != ''">
+				login_name = #{loginName, jdbcType=VARCHAR},
+			</if>
+			<if test="password != null and password != ''">
+				`password` = #{password, jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				`status` = #{status, jdbcType=INTEGER},
+			</if>
+			<if test="remark != null and remark != ''">
+				remark = #{remark, jdbcType=VARCHAR},
+			</if>
+			<if test="isAdministrator != null">
+				is_administrator = #{isAdministrator, jdbcType=INTEGER},
+			</if>
+			<if test="isYougouAdmin != null">
+				is_yougou_admin = #{isYougouAdmin, jdbcType=INTEGER},
+			</if>
+			<if test="email != null and email != ''">
+				email = #{email, jdbcType=VARCHAR},
+			</if>
+			<if test="emailstatus != null">
+				emailstatus = #{emailstatus, jdbcType=INTEGER},
+			</if>
+			<if test="strength!=null and strength!=''">
+				strength = #{strength, jdbcType=INTEGER},
+			</if>
+			<if test="mobileCode!=null and mobileCode!=''">
+				mobile_code = #{mobileCode, jdbcType=VARCHAR},
+			</if>
+			delete_flag = #{deleteFlag, jdbcType=INTEGER}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+    </update>
+    
+    <!-- 商家操作日志 -->
+    <resultMap id="OperationLogMapper" type="com.yougou.merchant.api.supplier.vo.MerchantOperationLog">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="operator" property="operator" jdbcType="VARCHAR" />
+        <result column="operated" property="operated" jdbcType="TIMESTAMP" />
+        <result column="operation_type" property="operationType" jdbcType="VARCHAR" />
+        <result column="operation_notes" property="operationNotes" jdbcType="VARCHAR" />
+        <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <select id="queryMerchantOperLog" resultMap="OperationLogMapper" parameterType="java.lang.String">
+    	SELECT
+			t.id,
+			t.operator,
+			t.operated,
+			t.operation_type,
+			t.operation_notes,
+			t.merchant_code,
+			t.user_id,
+			t.remark
+		FROM
+			tbl_merchant_operation_log t
+		WHERE
+			t.merchant_code = #{merchantCode, jdbcType=VARCHAR}
+    </select>
+    
+    <insert id="insertMerchantLog" parameterType="com.yougou.merchant.api.supplier.vo.MerchantOperationLog">
+    	INSERT INTO tbl_merchant_operation_log (
+			id,
+			operator,
+			operated,
+			operation_type,
+			operation_notes,
+			merchant_code,
+			user_id,
+			remark
+		)
+		VALUES
+			(
+			#{id},
+			#{operator},
+			#{operated},
+			#{operationType},
+			#{operationNotes},
+			#{merchantCode},
+			#{userId},
+			#{remark}
+			)
+    </insert>
+    
+    <select id="queryMerchantOperLogCount" resultType="int" parameterType="java.lang.String">
+    	SELECT
+			count(*)
+		FROM
+			tbl_merchant_operation_log t
+		WHERE
+			t.merchant_code = #{merchantCode, jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 商家中心菜单维护 -->
+    <resultMap type="com.yougou.merchant.api.supplier.vo.MerchantMenu" id="merchantMenuMapper">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="authrity_name" property="authrityName" jdbcType="VARCHAR" />
+        <result column="authrity_url" property="authrityURL" jdbcType="VARCHAR" />
+        <result column="authrity_module" property="authrityModule" jdbcType="INTEGER" />
+        <result column="sort_no" property="sortNo" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="query_menu_columns">
+    	id,
+		authrity_name,
+		remark,
+		create_time,
+		sort_no,
+		authrity_url,
+		authrity_module
+    </sql>
+    <select id="queryMerchantMenuList" resultMap="merchantMenuMapper" parameterType="java.lang.String">
+    	select 
+    		<include refid="query_menu_columns"/>
+    	from tbl_merchant_authority 
+    	<if test="menuName != null and menuName != ''">
+    		where authrity_name like CONCAT('%', '${menuName}', '%')
+    	</if>
+    </select>
+    <select id="queryMerchantMenuCount" resultType="int" parameterType="java.lang.String">
+    	select 
+    		count(*)
+    	from tbl_merchant_authority 
+    	<if test="menuName != null and menuName != ''">
+    		where authrity_name like CONCAT('%', '${menuName}', '%')
+    	</if>
+    </select>
+    <select id="getMerchantMenuById" resultMap="merchantMenuMapper" parameterType="java.lang.String">
+    	select 
+    		<include refid="query_menu_columns"/>
+    	from tbl_merchant_authority where id = #{id, jdbcType=VARCHAR}
+    </select>
+    <insert id="insertYmcMenuResource" parameterType="com.yougou.merchant.api.supplier.vo.MerchantMenu">
+    	INSERT INTO tbl_merchant_authority (
+			id,
+			authrity_name,
+			remark,
+			create_time,
+			sort_no,
+			authrity_url,
+			authrity_module
+		)
+		VALUES
+			(
+			#{id},
+			#{authrityName},
+			#{remark},
+			#{createTime},
+			#{sortNo},
+			#{authrityURL},
+			#{authrityModule}
+			)
+    </insert>
+    <update id="updateYmcMenuResource" parameterType="com.yougou.merchant.api.supplier.vo.MerchantMenu">
+    	UPDATE tbl_merchant_authority
+		SET 
+			authrity_name = #{authrityName},
+			authrity_module = #{authrityModule},
+			authrity_url = #{authrityURL},
+			remark = #{remark},
+			sort_no = #{sortNo}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+    </update>
+    <delete id="deleteYmcMenuResourceById" parameterType="java.lang.String">
+    	delete from tbl_merchant_authority where id = #{id, jdbcType=VARCHAR}
+    </delete>
+    
+    <!-- 用户菜单授权 -->
+    <resultMap type="com.yougou.merchant.api.supplier.vo.UserAuthority" id="userAuthorityMapper">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+    	<result column="user_id" property="userId" jdbcType="VARCHAR" />
+    	<result column="authority_id" property="authorityId" jdbcType="VARCHAR" />
+    	<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    	<result column="remark" property="remark" jdbcType="VARCHAR" />
+    	<result column="authrity_name" property="authrityName" jdbcType="VARCHAR" />
+    </resultMap>
+    <insert id="insertUserAuthority" parameterType="com.yougou.merchant.api.supplier.vo.UserAuthority">
+    	INSERT INTO tbl_merchant_user_authority (
+			id,
+			user_id,
+			authority_id,
+			create_date,
+			remark
+		)
+		VALUES
+			(
+			#{id},
+			#{userId},
+			#{authorityId},
+			#{createDate},
+			#{remark}
+			)
+    </insert>
+    <delete id="deleteUserAuthorityByUserId" parameterType="java.lang.String">
+    	delete from tbl_merchant_user_authority where user_id = #{userId, jdbcType=VARCHAR}
+    </delete>
+    <select id="queryUserAuthoritysByUserId" parameterType="java.lang.String" resultMap="userAuthorityMapper">
+    	SELECT
+			t2.id,
+			t2.user_id,
+			t2.authority_id,
+			t2.create_date,
+			t2.remark,
+			t1.authrity_name
+		FROM
+			tbl_merchant_authority t1
+		INNER JOIN tbl_merchant_user_authority t2 ON (t1.id = t2.authority_id)
+		WHERE
+			t1.authrity_module != 0
+		AND t2.user_id = #{userId, jdbcType=VARCHAR}
+    </select>
+    
+    <!-- 设置商家 -->
+    <select id="queryYougouAdminMerchantList" resultType="java.util.Map">
+    	SELECT
+			t2.id,
+			t1.supplier,
+			t1.supplier_code,
+			t1.is_input_yougou_warehouse,
+			t1.delete_flag,
+			t1.is_valid
+		FROM
+			tbl_sp_supplier t1
+		LEFT JOIN tbl_merchant_user_supplier t2 ON (
+			t1.supplier_code = t2.merchant_code
+		)
+		WHERE t1.supplier_type = '招商供应商'
+		AND t2.merchant_user_id = #{userId, jdbcType=VARCHAR}
+		<if test="merchantCode != null and merchantCode != ''">
+			AND t1.supplier_code LIKE CONCAT('%', '${merchantCode}', '%')
+		</if>
+		<if test="merchantName != null and merchantName != ''">
+			AND t1.supplier LIKE CONCAT('%', '${merchantName}', '%')
+		</if>
+		<if test="isInputYougouWarehouse != null">
+			AND t1.is_input_yougou_warehouse = #{isInputYougouWarehouse, jdbcType=INTEGER}	
+		</if>
+		ORDER BY CONVERT (t1.supplier USING GBK)
+    </select>
+    <select id="queryYougouAdminMerchantCount" resultType="int">
+    	SELECT
+			count(*)
+		FROM
+			tbl_sp_supplier t1
+		LEFT JOIN tbl_merchant_user_supplier t2 ON (
+			t1.supplier_code = t2.merchant_code
+		)
+		WHERE t1.supplier_type = '招商供应商'
+		AND t2.merchant_user_id = #{userId, jdbcType=VARCHAR}
+		<if test="merchantCode != null and merchantCode != ''">
+			AND t1.supplier_code LIKE CONCAT('%', '${merchantCode}', '%')
+		</if>
+		<if test="merchantName != null and merchantName != ''">
+			AND t1.supplier LIKE CONCAT('%', '${merchantName}', '%')
+		</if>
+		<if test="isInputYougouWarehouse != null">
+			AND t1.is_input_yougou_warehouse = #{isInputYougouWarehouse, jdbcType=INTEGER}	
+		</if>
+    </select>
+    
+    <select id="queryMerchantNotHadList" resultType="java.util.Map">
+    	SELECT
+			t1.supplier,
+			t1.supplier_code,
+			t1.is_input_yougou_warehouse,
+			t1.delete_flag,
+			t1.is_valid
+		FROM
+			tbl_sp_supplier t1
+		WHERE
+			NOT EXISTS (
+				SELECT
+					t2.merchant_code
+				FROM
+					tbl_merchant_user_supplier t2
+				WHERE
+					t1.supplier_code = t2.merchant_code
+				AND t2.merchant_user_id = #{userId, jdbcType=VARCHAR}
+			)
+		AND t1.supplier_type = '招商供应商'
+		AND t1.delete_flag = 1
+		<if test="merchantCode != null and merchantCode != ''">
+			AND t1.supplier_code LIKE CONCAT('%', '${merchantCode}', '%')
+		</if>
+		<if test="merchantName != null and merchantName != ''">
+			AND t1.supplier LIKE CONCAT('%', '${merchantName}', '%')
+		</if>
+		<if test="isInputYougouWarehouse != null">
+			AND t1.is_input_yougou_warehouse = #{isInputYougouWarehouse, jdbcType=INTEGER}	
+		</if>
+		ORDER BY CONVERT (t1.supplier USING GBK)
+    </select>
+    <select id="queryMerchantNotHadCount" resultType="int">
+    	SELECT
+			count(*)
+		FROM
+			tbl_sp_supplier t1
+		WHERE
+			NOT EXISTS (
+				SELECT
+					t2.merchant_code
+				FROM
+					tbl_merchant_user_supplier t2
+				WHERE
+					t1.supplier_code = t2.merchant_code
+				AND t2.merchant_user_id = #{userId, jdbcType=VARCHAR}
+			)
+		AND t1.supplier_type = '招商供应商'
+		AND t1.delete_flag = 1
+		<if test="merchantCode != null and merchantCode != ''">
+			AND t1.supplier_code LIKE CONCAT('%', '${merchantCode}', '%')
+		</if>
+		<if test="merchantName != null and merchantName != ''">
+			AND t1.supplier LIKE CONCAT('%', '${merchantName}', '%')
+		</if>
+		<if test="isInputYougouWarehouse != null">
+			AND t1.is_input_yougou_warehouse = #{isInputYougouWarehouse, jdbcType=INTEGER}	
+		</if>
+    </select>
+    
+    <insert id="insertYougouAdminMerchant">
+    	INSERT INTO tbl_merchant_user_supplier (
+			id,
+			merchant_user_id,
+			merchant_code
+		)
+		VALUES
+			(#{id},#{userId}, #{merchantCode})
+    </insert>
+    <delete id="deleteYougouAdminMerchant">
+    	delete from tbl_merchant_user_supplier where id = #{id, jdbcType=VARCHAR}
+    </delete>
+    
+    <insert id="insertUpdateHistory" parameterType="com.yougou.merchant.api.supplier.vo.SupplierUpdateHistory">
+    	INSERT INTO tbl_sp_supplier_update_history (
+			id,
+			supplier_id,
+			operator,
+			operation_time,
+			processing,
+			update_field,
+			update_before,
+			update_after
+		)
+		VALUES
+			(
+			#{id},
+			#{supplierId},
+			#{operator},
+			#{operatorTime},
+			#{processing},
+			#{field},
+			#{updateBefore},
+			#{updateAfter}
+		)
+    </insert> 
+    									
+     <select id="queryMerchantBankInfo" resultType="java.util.Map" parameterType="java.lang.String">
+     	select   s.id,s.supplier_code,s.supplier,pos_source_no,s.is_valid,set_of_books_code,
+				s.set_of_books_name,s.supplier_type,s.balance_trader_code,
+				s.balance_trader_name ,
+				c.bank_owner as sub_bank,c.bank_account as account ,
+				c.bank_name  as bank  from tbl_sp_supplier  s ,tbl_sp_supplier_contract  c
+			where s.supplier_code=#{merchantCode}    and   s.id=c.supplier_id
+			and c.renew_flag in ('1','2')
+		union  
+		select '','','','','','','','','','',s.contact  as  sub_bank, s.account , s.bank as   bank 
+	   	from tbl_sp_supplier  s ,tbl_merchant_supplier_expand e
+		where s.supplier_code=#{merchantCode}   and s.supplier_code=e.merchant_code 	
+     	
+		
+    </select>
+    
+</mapper>

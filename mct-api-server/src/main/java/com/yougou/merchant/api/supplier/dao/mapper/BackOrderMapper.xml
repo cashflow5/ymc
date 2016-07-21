@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.BackOrderMapper" >
+    
+    <!-- 保存退回单信息（退回单主表） -->
+	<insert id="insertBackOrderInfo" parameterType="com.yougou.merchant.api.supplier.vo.BackOrderVo">
+		insert into tbl_merchant_qa_back_wareh(
+		  id,
+		  backcode, 
+		  back_warehhouse_code,
+		  status,
+		  receive_status,
+		  back_time,
+		  plan_back_totalcount,
+		  already_back_totalcount,
+		  back_operator
+		)values (
+			#{id, jdbcType=VARCHAR},
+			#{backCode, jdbcType=VARCHAR},
+			#{backWarehHouseCode, jdbcType=VARCHAR},
+			#{status, jdbcType=VARCHAR},
+			#{receiveStatus, jdbcType=INTEGER},
+			#{backTime , jdbcType=TIMESTAMP},
+			#{planBackTotalCount , jdbcType=INTEGER},
+			#{alreadyBackTotalCount, jdbcType=INTEGER},
+			#{backOperator, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 保存退回单详情 -->
+	<insert id="batchInsertBackOrderDetailInfo" parameterType="java.util.HashMap">
+		insert into tbl_merchant_qa_back_wareh_detail(
+		  id,
+		  main_id,
+		  commodity_name,
+		  spec_key,
+		  order_sub_no,
+		  inside_code,
+		  supplier_code,
+		  product_no,
+		  type,
+		  plan_back_count,
+		  already_back_count,
+		  update_time
+		)values		
+		<foreach collection="detailList" item="item" separator="," >  
+        (
+        	#{item.id, jdbcType=VARCHAR},
+			#{item.mainId, jdbcType=VARCHAR},
+			#{item.commodityName, jdbcType=VARCHAR},
+			#{item.specKey, jdbcType=VARCHAR},
+			#{item.orderSubNo, jdbcType=VARCHAR},
+			#{item.insideCode , jdbcType=VARCHAR},
+			#{item.supplierCode , jdbcType=VARCHAR},
+			#{item.productNo, jdbcType=VARCHAR},
+			#{item.type, jdbcType=VARCHAR},
+			#{item.planBackCount, jdbcType=INTEGER},
+			#{item.alreadyBackCount, jdbcType=INTEGER},
+			#{item.updateTime, jdbcType=TIMESTAMP}			
+        )  
+	    </foreach>  
+	</insert>
+	
+	<!-- 根据退回单ID查询记录是否已存在 -->
+	<select id="queryBackOrderCountById" resultType="int" parameterType="String">		
+		select count(t.id) counts 
+		from tbl_merchant_qa_back_wareh t 
+		where t.id = #{value}
+	</select>
+   
+</mapper>

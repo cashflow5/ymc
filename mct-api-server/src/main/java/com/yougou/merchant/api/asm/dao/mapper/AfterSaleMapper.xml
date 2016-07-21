@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.asm.dao.AfterSaleMapper">
+   	<!-- 退换货质检 -->
+    <resultMap id="returnQualityMapper" type="com.yougou.dto.output.ReturnQA">    
+        <result column="return_id" property="return_id" jdbcType="VARCHAR" />
+        <result column="order_sub_no" property="order_sub_no" jdbcType="VARCHAR" />
+        <result column="out_order_id" property="out_order_id" jdbcType="VARCHAR" />
+        <result column="logistics_name" property="logistics_name" jdbcType="VARCHAR" />
+        <result column="express_code" property="express_code" jdbcType="VARCHAR" />
+        <result column="warehouse_code" property="warehouse_name" jdbcType="VARCHAR" />
+        <result column="return_logistics_name" property="return_logistics_name" jdbcType="VARCHAR" />
+        <result column="return_express_code" property="return_express_code" jdbcType="VARCHAR" />
+        <result column="express_fee" property="express_fee" jdbcType="DOUBLE" />
+        <result column="qa_date" property="qa_date" jdbcType="TIMESTAMP" />
+        <result column="qa_person" property="qa_person" jdbcType="VARCHAR" />
+        <result column="qa_remark" property="qa_remark" jdbcType="VARCHAR" />
+    </resultMap>
+	<resultMap id="returnDetailMapper" type="com.yougou.dto.output.ReturnQADetail">
+		<result column="apply_no" property="apply_no" jdbcType="VARCHAR" />
+		<result column="apply_status" property="apply_status" jdbcType="VARCHAR" />
+		<result column="attachment" property="attachment" jdbcType="VARCHAR" />
+		<result column="applyer" property="applyer" jdbcType="VARCHAR" />
+		<result column="apply_time" property="apply_time" jdbcType="TIMESTAMP" />
+		<result column="aftersale_type" property="aftersale_type" jdbcType="VARCHAR" />
+		<result column="aftersale_reason" property="aftersale_reason" jdbcType="VARCHAR" />
+		<result column="sale_remark" property="sale_remark" jdbcType="VARCHAR" />
+		<result column="prod_no" property="prod_no" jdbcType="VARCHAR" />
+		<result column="qa_prod_no" property="qa_prod_no" jdbcType="VARCHAR" />
+		<result column="qa_quantity" property="qa_quantity" jdbcType="INTEGER" />
+		<result column="question_type" property="question_type" jdbcType="VARCHAR" />
+		<result column="question_description" property="question_description" jdbcType="VARCHAR" />
+		<result column="storage_type" property="storage_type" jdbcType="VARCHAR" />
+		<result column="qa_description" property="qa_description" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="queryReturnQualityList" resultMap="returnQualityMapper" parameterType="com.yougou.dto.input.ReturnQualityQueryInputDto">
+		SELECT DISTINCT
+			p.id AS return_id,
+			d.order_sub_no,
+			t3.out_order_id AS out_order_id,
+			t3.express_order_id AS express_code,
+			t3.logistics_name,
+			t3.warehouse_code,
+			p.express_charges AS express_fee,
+			p.express_name AS return_logistics_name,
+			p.express_code AS return_express_code,
+			p.qa_date,
+			p.qa_person,
+			p.remark AS qa_remark
+		FROM
+			tbl_wms_return_qa_product p
+		INNER JOIN tbl_wms_return_qa_product_detail d ON (p.id = d.return_qa_product_id)
+		INNER JOIN tbl_order_sub AS t3 ON (d.order_sub_no = t3.order_sub_no)
+		INNER JOIN tbl_order_sub_expand t4 ON (t3.id = t4.order_sub_id)
+		LEFT JOIN tbl_order_sale_apply_bill b ON (d.apply_no = b.apply_no)
+		WHERE p.is_offset IS NULL
+		<include refid="queryReturnQualityWhere"/>
+		order by p.qa_date desc
+	</select>
+	
+	<select id="queryReturnQualityCount" resultType="int" parameterType="com.yougou.dto.input.ReturnQualityQueryInputDto">
+		SELECT count(DISTINCT p.id)
+		FROM
+			tbl_wms_return_qa_product p
+		INNER JOIN tbl_wms_return_qa_product_detail d ON (p.id = d.return_qa_product_id)
+		INNER JOIN tbl_order_sub AS t3 ON (d.order_sub_no = t3.order_sub_no)
+		INNER JOIN tbl_order_sub_expand t4 ON (t3.id = t4.order_sub_id)
+		LEFT JOIN tbl_order_sale_apply_bill b ON (d.apply_no = b.apply_no)
+		WHERE p.is_offset IS NULL
+		<include refid="queryReturnQualityWhere"/>
+		order by p.qa_date desc
+	</select>
+	
+	<sql id="queryReturnQualityWhere">
+		<if test="merchant_code != null and merchant_code != ''">
+			AND t4.merchant_code = #{merchant_code, jdbcType=VARCHAR}
+		</if>
+		<if test="orderNo != null and orderNo != ''">
+			AND d.order_sub_no = #{orderNo, jdbcType=VARCHAR}
+		</if>
+		<if test="applyNo != null and applyNo != ''">
+			AND d.apply_no = #{applyNo, jdbcType=VARCHAR}
+		</if>
+		<if test="applyStatus != null and applyStatus != ''">
+			AND b.`status` = #{applyStatus, jdbcType=VARCHAR}
+		</if>
+		<if test="out_order_id != null and out_order_id != ''">
+			AND t3.out_order_id = #{out_order_id, jdbcType=VARCHAR}
+		</if>
+		<if test="applyStartTime != null">
+		<![CDATA[	AND b.create_time >= #{applyStartTime} ]]>
+		</if>
+		<if test="applyEndTime != null">
+		<![CDATA[	AND b.create_time <= #{applyEndTime} ]]>
+		</if>
+		<if test="returnId != null and returnId != ''">
+			AND p.id = #{returnId, jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<select id="queryReturnQualityDetailList" resultMap="returnDetailMapper" parameterType="java.lang.String">
+		SELECT
+			b.apply_no,
+			b.`status` AS apply_status,
+			b.sale_type AS aftersale_type,
+			b.sale_reason AS aftersale_reason,
+			b.remark AS sale_remark,
+			b.images_path AS attachment,
+			b.createor AS applyer,
+			b.create_time AS apply_time,
+			d.product_no AS prod_no,
+			d.qa_product_no AS qa_prod_no,
+			d.qa_quantity,
+			d.question_type,
+			d.question_description,
+			d.storage_type,
+			d.qa_description
+		FROM
+			tbl_wms_return_qa_product_detail d
+		LEFT JOIN tbl_order_sale_apply_bill b ON d.apply_no = b.apply_no
+		WHERE d.return_qa_product_id = #{returnId, jdbcType=VARCHAR}
+	</select>
+</mapper>

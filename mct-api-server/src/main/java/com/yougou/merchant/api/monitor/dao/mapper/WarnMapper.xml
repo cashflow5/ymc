@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.monitor.dao.WarnMapper">
+    
+    <insert id="insertMonitorEarlyWarning" parameterType="com.yougou.merchant.api.monitor.vo.MonitorEarlyWarning">
+    	INSERT tbl_merchant_api_monitor_early_warning (
+			id, app_key,
+			time_quantum,
+			warm_appkey_call_count,
+			warm_day_call_count,
+			warm_rate_count,
+			warm_success_count
+		)
+		VALUES
+			(
+			#{id},
+			#{appKey},
+			#{timeQuantum},
+			#{warmAppkeyCallCount},
+			#{warmDayCallCount},
+			#{warmRateCount},
+			#{warmSuccessCount}
+			)
+    </insert>
+    
+    <insert id="insertMonitorAppkeyWarnDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorAppkeyWarnDetail">
+    	INSERT tbl_merchant_api_monitor_appkey_warning_detail (
+			id,
+			app_key,
+			time_quantum,
+			warm_appkey_call_count,
+			appkey_call_count
+		)
+		VALUES
+			(
+				#{id},
+				#{appKey},
+				#{timeQuantum},
+				#{warmAppkeyCallCount},
+				#{appkeyCallCount}
+			)
+    </insert>
+    
+    <insert id="insertMonitorDayWarnDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorDayWarnDetail">
+    	INSERT tbl_merchant_api_monitor_day_warning_detail (
+			id,
+			app_key,
+			api_id,
+			time_quantum,
+			warm_day_call_count,
+			day_call_count
+		)
+		VALUES
+			(
+				#{id},
+				#{appKey},
+				#{apiId},
+				#{timeQuantum},
+				#{warmDayCallCount},
+				#{dayCallCount}
+			)
+    </insert>
+    
+    <insert id="insertMonitorSuccRateWarnDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorSuccRateWarnDetail">
+    	INSERT tbl_merchant_api_monitor_success_rate_detail (
+			id,
+			app_key,
+			api_id,
+			time_quantum,
+			success_call_count,
+			fail_call_count
+		)
+		VALUES
+			(
+				#{id},
+				#{appKey},
+				#{apiId},
+				#{timeQuantum},
+				#{successCallCount},
+				#{failCallCount}
+			)
+    </insert>
+    
+    <insert id="insertMonitorRateWarnDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorRateWarnDetail">
+    	INSERT tbl_merchant_api_monitor_rate_warning_detail (
+			id,
+			app_key,
+			api_id,
+			time_quantum,
+			warm_rate_call_count,
+			rate_call_count
+		)
+		VALUES
+			(
+				#{id},
+				#{appKey},
+				#{apiId},
+				#{timeQuantum},
+				#{warmRateCallCount},
+				#{rateCallCount}
+			)
+    </insert>
+    
+    <sql id="query_where_monitor">
+    	<if test="startTime != null and startTime != ''">
+			AND d.time_quantum <![CDATA[ >= ]]> #{startTime, jdbcType=VARCHAR}	
+		</if>
+		<if test="endTime != null and endTime != ''">
+			AND d.time_quantum <![CDATA[ <= ]]> #{endTime, jdbcType=VARCHAR}	
+		</if>	
+		<if test="appKey != null and appKey != ''">
+			AND d.app_key = #{appKey, jdbcType=VARCHAR}
+		</if>
+    </sql>
+    
+    <select id="queryMonitorEarlyWarning" parameterType="com.yougou.merchant.api.monitor.vo.MonitorEarlyWarnQueryVo" resultMap="MonitorEarlyWarningMapper">
+    	SELECT
+			d.app_key,
+			SUM(d.warm_appkey_call_count) AS warm_appkey_call_count,
+			sum(d.warm_day_call_count) AS warm_day_call_count,
+			sum(d.warm_rate_count) AS warm_rate_count,
+			sum(d.warm_success_count) AS warm_success_count
+		FROM
+			tbl_merchant_api_monitor_early_warning d
+		WHERE 1=1
+		<include refid="query_where_monitor"/>
+		GROUP BY d.app_key
+    </select>
+    <select id="queryMonitorEarlyWarningCount" parameterType="com.yougou.merchant.api.monitor.vo.MonitorEarlyWarnQueryVo" resultType="int">
+    	SELECT
+			count(DISTINCT d.app_key)
+		FROM
+			tbl_merchant_api_monitor_early_warning d
+		WHERE 1=1
+		<include refid="query_where_monitor"/>
+    </select>
+    
+    <select id="queryAppKeyEarlyWarningDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorEarlyWarnQueryVo" resultMap="MonitorAppkeyWarnDetailMapper">
+    	SELECT
+			d.time_quantum,
+			d.appkey_call_count,
+			d.warm_appkey_call_count
+		FROM
+			tbl_merchant_api_monitor_appkey_warning_detail d
+		WHERE 1=1
+		<include refid="query_where_monitor"/>
+		ORDER BY d.time_quantum desc
+    </select>
+    
+    <select id="queryApiEarlyWarningDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorEarlyWarnQueryVo" resultMap="MonitorDayWarnDetailMapper">
+    	SELECT
+			d.time_quantum,
+			d.api_id,
+			d.warm_day_call_count,
+			d.day_call_count
+		FROM
+			tbl_merchant_api_monitor_day_warning_detail d
+		WHERE 1=1
+		<include refid="query_where_monitor"/>
+		ORDER BY d.time_quantum DESC
+    </select>
+    
+    <select id="querySuccRateWarnDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorEarlyWarnQueryVo" resultMap="MonitorSuccRateWarnDetailMapper">
+    	SELECT
+			d.time_quantum,
+			d.api_id,
+			d.fail_call_count,
+			d.success_call_count
+		FROM
+			tbl_merchant_api_monitor_success_rate_detail d
+		WHERE 1 = 1 
+		<include refid="query_where_monitor"/>
+		ORDER BY d.time_quantum DESC
+    </select>
+    
+    <select id="queryRateWarnDetail" parameterType="com.yougou.merchant.api.monitor.vo.MonitorEarlyWarnQueryVo" resultMap="MonitorRateWarnDetailMapper">
+    	SELECT
+			d.time_quantum,
+			d.api_id,
+			d.rate_call_count,
+			d.warm_rate_call_count
+		FROM
+			tbl_merchant_api_monitor_rate_warning_detail d
+		WHERE 1 = 1
+		<include refid="query_where_monitor"/>
+		ORDER BY d.time_quantum DESC
+    </select>
+    
+    
+    <resultMap type="com.yougou.merchant.api.monitor.vo.MonitorEarlyWarning" id="MonitorEarlyWarningMapper">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+    	<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+    	<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+    	<result column="warm_appkey_call_count" property="warmAppkeyCallCount" jdbcType="VARCHAR" />
+    	<result column="warm_day_call_count" property="warmDayCallCount" jdbcType="VARCHAR" />
+    	<result column="warm_rate_count" property="warmRateCount" jdbcType="VARCHAR" />
+    	<result column="warm_success_count" property="warmSuccessCount" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <resultMap type="com.yougou.merchant.api.monitor.vo.MonitorAppkeyWarnDetail" id="MonitorAppkeyWarnDetailMapper">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+    	<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+    	<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+    	<result column="warm_appkey_call_count" property="warmAppkeyCallCount" jdbcType="VARCHAR" />
+    	<result column="appkey_call_count" property="appkeyCallCount" jdbcType="VARCHAR" />
+    </resultMap>
+	
+    <resultMap type="com.yougou.merchant.api.monitor.vo.MonitorDayWarnDetail" id="MonitorDayWarnDetailMapper">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+    	<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+    	<result column="api_id" property="apiId" jdbcType="VARCHAR" />
+    	<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+    	<result column="warm_day_call_count" property="warmDayCallCount" jdbcType="VARCHAR" />
+    	<result column="day_call_count" property="dayCallCount" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <resultMap type="com.yougou.merchant.api.monitor.vo.MonitorSuccRateWarnDetail" id="MonitorSuccRateWarnDetailMapper">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+    	<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+    	<result column="api_id" property="apiId" jdbcType="VARCHAR" />
+    	<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+    	<result column="success_call_count" property="successCallCount" jdbcType="VARCHAR" />
+    	<result column="fail_call_count" property="failCallCount" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <resultMap type="com.yougou.merchant.api.monitor.vo.MonitorRateWarnDetail" id="MonitorRateWarnDetailMapper">
+    	<result column="id" property="id" jdbcType="VARCHAR" />
+    	<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+    	<result column="api_id" property="apiId" jdbcType="VARCHAR" />
+    	<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+    	<result column="warm_rate_call_count" property="warmRateCallCount" jdbcType="VARCHAR" />
+    	<result column="rate_call_count" property="rateCallCount" jdbcType="VARCHAR" />
+    </resultMap>
+    
+    <select id="queryApiFrequencyBynow" parameterType="com.yougou.merchant.api.monitor.vo.MonitorEarlyWarnQueryVo" resultMap="realityFrequencyMapper">
+    	SELECT
+			CONCAT(substring(d.time_quantum, 1, 13), ':00:00') AS time_quantum,
+			d.app_key,
+			d.api_id,
+			sum(d.call_count) AS rate_call_count
+		FROM
+			tbl_merchant_api_analyze_detail d
+		WHERE 1=1 
+		AND	d.time_quantum <![CDATA[ >= ]]> #{startTime, jdbcType=VARCHAR}	
+		AND d.time_quantum <![CDATA[ < ]]> #{endTime, jdbcType=VARCHAR}	
+		GROUP BY
+			d.app_key,
+			d.api_id,
+			substring(d.time_quantum, 1, 13)
+    </select>
+    
+    <resultMap type="com.yougou.merchant.api.monitor.vo.MonitorRateWarnDetail" id="realityFrequencyMapper">
+    	<result column="app_key" property="appKey" jdbcType="VARCHAR" />
+    	<result column="api_id" property="apiId" jdbcType="VARCHAR" />
+    	<result column="time_quantum" property="timeQuantum" jdbcType="VARCHAR" />
+    	<result column="rate_call_count" property="rateCallCount" jdbcType="VARCHAR" />
+    </resultMap>
+</mapper>

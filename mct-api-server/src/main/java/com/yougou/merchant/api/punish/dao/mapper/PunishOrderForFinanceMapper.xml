@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.punish.dao.PunishOrderForFinanceMapper">
+	<select id="getPunishOrderIdByRegistNumStr" resultType="java.util.Map" parameterType="java.lang.String">
+		select po.id as punish_id from tbl_sp_supplier_punish_order po inner join tbl_sp_supplier_punish_settle 
+		ps on po.settle_id = ps.id  where ps.regist_num in (${registNumStr})
+	</select>
+	
+	<update id="updatePunishOrderToSettle">
+		update tbl_sp_supplier_punish_order po set is_settle='1' where po.settle_id in
+		(select ps.id from tbl_sp_supplier_punish_settle ps where po.settle_id = ps.id 
+		and ps.regist_num in (${registNumStr}))
+	</update>
+	
+	<update id="updatePunishStockSettle">
+		update tbl_sp_supplier_punish_settle set status = #{status,jdbcType=VARCHAR}
+		 where regist_num in (${registNumStr})
+	</update>
+	
+	<update id="settleingPunishStockByRegistNum">
+		update tbl_sp_supplier_punish_settle set status = #{status,jdbcType=VARCHAR},
+		settle_no = #{settleNo,jdbcType=VARCHAR},settle_time = #{settleDate} where regist_num in (${registNumStr})
+	</update>
+	
+	<update id="voidPunishStockSettleByRegistNum">
+		update tbl_sp_supplier_punish_settle set status = #{status,jdbcType=VARCHAR},
+		settle_no = null,settle_time = null where regist_num in (${registNumStr})
+	</update>
+	
+</mapper>

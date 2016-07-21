@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.MerchantCommodityMapper" >
+    
+  <resultMap id="CommodityResultMap" type="com.yougou.merchant.api.supplier.vo.Commodity" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="cat_no" property="catNo" jdbcType="VARCHAR" />
+    <result column="cat_name" property="catName" jdbcType="VARCHAR" />
+    <result column="commodity_name" property="commodityName" jdbcType="VARCHAR" />
+    <result column="commodity_no" property="commodityNo" jdbcType="VARCHAR" />
+    <result column="commodity_status" property="commodityStatus" jdbcType="INTEGER" />
+    <result column="update_date" property="updateDate" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="VARCHAR" />
+    <result column="show_date" property="showDate" jdbcType="VARCHAR" />
+    <result column="down_date" property="downDate" jdbcType="VARCHAR" />
+    <result column="is_audit" property="isAudit" jdbcType="INTEGER" />
+    <result column="pic_small" property="picSmall" jdbcType="VARCHAR" />
+    <result column="sale_price" property="salePrice" jdbcType="VARCHAR" />
+    <result column="supplier_code" property="supplierCode" jdbcType="VARCHAR" />
+    <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
+    <result column="order_distribution_side" property="orderDistributionSide" jdbcType="VARCHAR" />
+    <result column="cost_price" property="costPrice" jdbcType="VARCHAR" />
+    <result column="public_price" property="publicPrice" jdbcType="VARCHAR" />
+    <result column="style_no" property="styleNo" jdbcType="VARCHAR" />
+    <result column="spec_name" property="specName" jdbcType="VARCHAR" />
+    <result column="brand_no" property="brandNo" jdbcType="VARCHAR" />
+    <result column="brand_name" property="brandName" jdbcType="VARCHAR" />
+    <result column="cat_structname" property="catStructName" jdbcType="VARCHAR" />
+    <result column="years" property="years" jdbcType="VARCHAR" />
+  </resultMap>
+  
+    <select id="queryCommodityList" resultMap="CommodityResultMap" parameterType="com.yougou.merchant.api.supplier.vo.CommodityQueryVo" >
+		SELECT
+			s.id AS id,
+			s.cat_no AS cat_no,
+			s.cat_name AS cat_name,
+			s.commodity_name AS commodity_name,
+			s.NO AS commodity_no,
+			s.commodity_status AS commodity_status,
+			s.update_date AS update_date,
+			s.create_date AS create_date,
+			s.show_date AS show_date,
+			s.down_date AS down_date,
+			s.is_audit AS is_audit,
+			s.pic_small AS pic_small,
+			s.sale_price AS sale_price,
+			s.supplier_code AS supplier_code,
+			s.merchant_code AS merchant_code,
+			s.order_distribution_side AS order_distribution_side,
+			s.cost_price AS cost_price,
+			s.public_price AS public_price,
+			s.style_no AS style_no,
+			s.spec_name,
+			s.brand_no as brand_no,
+			s.brand_name as brand_name,
+			s.cat_structname as cat_structname,
+			s.years
+		FROM
+			tbl_commodity_style s
+		WHERE
+			s.delete_flag = 1
+	    <if test="merchantCode != null and merchantCode!='' ">
+	 		AND s.merchant_code = #{merchantCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="commodityName != null and commodityName != '' ">
+	 		AND s.commodity_name like CONCAT('%','${commodityName}','%' )  
+		</if>
+		<if test="commodityNo != null and commodityNo != '' ">
+	 		AND s.no = #{commodityNo,jdbcType=VARCHAR} 
+		</if>
+		<!--  供应商款色编码 -->
+		<if test="styleColorNo != null and styleColorNo != '' ">
+	 		AND s.supplier_code = #{styleColorNo,jdbcType=VARCHAR} 
+		</if>
+		<!-- 创建时间 -->
+		<if test="minCreateDate != null and minCreateDate != ''">
+			<![CDATA[  and s.create_date >= CONCAT('${minCreateDate}',' 00:00:00')   ]]>
+		</if>
+		<if test="maxCreateDate != null and maxCreateDate != ''">
+			<![CDATA[  and s.create_date <= CONCAT('${maxCreateDate}',' 23:59:59')   ]]>
+		</if>
+		<if test="brandNo != null and brandNo != ''">
+	 		AND s.brand_no = #{brandNo,jdbcType=VARCHAR} 
+		</if>
+		<if test="category != null and category.size()>0">
+	 		AND s.cat_structname in 
+	 		<foreach index="index" item="item" collection="category" open="(" separator="," close=")">
+        	   #{item}
+            </foreach>
+		</if>
+		<if test="styleNo != null and styleNo != ''">
+	 		AND s.style_no LIKE CONCAT('${styleNo}','%' ) 
+		</if>
+    </select>
+    <select id="queryCommodityListCount" resultType="int" parameterType="com.yougou.merchant.api.supplier.vo.CommodityQueryVo" >
+		SELECT
+		    count(1)
+		FROM
+			tbl_commodity_style s
+		WHERE
+			s.delete_flag = 1
+	    <if test="merchantCode != null and merchantCode!='' ">
+	 		AND s.merchant_code = #{merchantCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="commodityName != null and commodityName != '' ">
+	 		AND s.commodity_name like CONCAT('%','${commodityName}','%' )  
+		</if>
+		<if test="commodityNo != null and commodityNo != '' ">
+	 		AND s.no = #{commodityNo,jdbcType=VARCHAR} 
+		</if>
+		<!--  供应商款色编码 -->
+		<if test="styleColorNo != null and styleColorNo != '' ">
+	 		AND s.supplier_code = #{styleColorNo,jdbcType=VARCHAR} 
+		</if>
+		<!-- 创建时间 -->
+		<if test="minCreateDate != null and minCreateDate != ''">
+			<![CDATA[  and s.create_date >= CONCAT('${minCreateDate}',' 00:00:00')   ]]>
+		</if>
+		<if test="maxCreateDate != null and maxCreateDate != ''">
+			<![CDATA[  and s.create_date <= CONCAT('${maxCreateDate}',' 23:59:59')   ]]>
+		</if>
+		<if test="brandNo != null and brandNo != ''">
+	 		AND s.brand_no = #{brandNo,jdbcType=VARCHAR} 
+		</if>
+		<if test="category != null and category.size()>0">
+	 		AND s.cat_structname in 
+	 		<foreach index="index" item="item" collection="category" open="(" separator="," close=")">
+        	   #{item}
+            </foreach>
+		</if>
+		<if test="styleNo != null and styleNo != ''">
+	 		AND s.style_no LIKE CONCAT('${styleNo}','%' ) 
+		</if>
+    </select>
+    
+    <!-- 品牌模糊 -->
+    <select id="queryCommodityListByLike" resultMap="CommodityResultMap" parameterType="com.yougou.merchant.api.supplier.vo.CommodityQueryVo" >
+		SELECT
+			s.id AS id,
+			s.cat_no AS cat_no,
+			s.cat_name AS cat_name,
+			s.commodity_name AS commodity_name,
+			s.NO AS commodity_no,
+			s.commodity_status AS commodity_status,
+			s.update_date AS update_date,
+			s.create_date AS create_date,
+			s.show_date AS show_date,
+			s.down_date AS down_date,
+			s.is_audit AS is_audit,
+			s.pic_small AS pic_small,
+			s.sale_price AS sale_price,
+			s.supplier_code AS supplier_code,
+			s.merchant_code AS merchant_code,
+			s.order_distribution_side AS order_distribution_side,
+			s.cost_price AS cost_price,
+			s.public_price AS public_price,
+			s.style_no AS style_no,
+			s.spec_name,
+			s.brand_no as brand_no,
+			s.brand_name as brand_name,
+			s.cat_structname as cat_structname,
+			s.years
+		FROM
+			tbl_commodity_style s
+		WHERE
+			s.delete_flag = 1
+	    <if test="merchantCode != null and merchantCode!='' ">
+	 		AND s.merchant_code = #{merchantCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="commodityName != null and commodityName != '' ">
+	 		AND s.commodity_name like CONCAT('%','${commodityName}','%' )  
+		</if>
+		<if test="commodityNo != null and commodityNo != '' ">
+	 		AND s.no = #{commodityNo,jdbcType=VARCHAR} 
+		</if>
+		<!--  供应商款色编码 -->
+		<if test="styleColorNo != null and styleColorNo != '' ">
+	 		AND s.supplier_code = #{styleColorNo,jdbcType=VARCHAR} 
+		</if>
+		<!-- 创建时间 -->
+		<if test="minCreateDate != null and minCreateDate != ''">
+			<![CDATA[  and s.create_date >= CONCAT('${minCreateDate}',' 00:00:00')   ]]>
+		</if>
+		<if test="maxCreateDate != null and maxCreateDate != ''">
+			<![CDATA[  and s.create_date <= CONCAT('${maxCreateDate}',' 23:59:59')   ]]>
+		</if>
+		<if test="brandNo != null and brandNo != ''">
+	 		AND s.brand_no = #{brandNo,jdbcType=VARCHAR} 
+		</if>
+		<if test="category != null and category.size()>0">
+	 		<foreach index="index" item="item" collection="category" open="AND(" separator="OR" close=")">
+        	    s.cat_structname like CONCAT('${item}','%' ) 
+            </foreach>
+		</if>
+		<if test="styleNo != null and styleNo != ''">
+	 		AND s.style_no LIKE CONCAT('${styleNo}','%' ) 
+		</if>
+    </select>
+    <select id="queryCommodityListCountByLike" resultType="int" parameterType="com.yougou.merchant.api.supplier.vo.CommodityQueryVo" >
+		SELECT
+		    count(1)
+		FROM
+			tbl_commodity_style s
+		WHERE
+			s.delete_flag = 1
+	    <if test="merchantCode != null and merchantCode!='' ">
+	 		AND s.merchant_code = #{merchantCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="commodityName != null and commodityName != '' ">
+	 		AND s.commodity_name like CONCAT('%','${commodityName}','%' )  
+		</if>
+		<if test="commodityNo != null and commodityNo != '' ">
+	 		AND s.no = #{commodityNo,jdbcType=VARCHAR} 
+		</if>
+		<!--  供应商款色编码 -->
+		<if test="styleColorNo != null and styleColorNo != '' ">
+	 		AND s.supplier_code = #{styleColorNo,jdbcType=VARCHAR} 
+		</if>
+		<!-- 创建时间 -->
+		<if test="minCreateDate != null and minCreateDate != ''">
+			<![CDATA[  and s.create_date >= CONCAT('${minCreateDate}',' 00:00:00')   ]]>
+		</if>
+		<if test="maxCreateDate != null and maxCreateDate != ''">
+			<![CDATA[  and s.create_date <= CONCAT('${maxCreateDate}',' 23:59:59')   ]]>
+		</if>
+		<if test="brandNo != null and brandNo != ''">
+	 		AND s.brand_no = #{brandNo,jdbcType=VARCHAR} 
+		</if>
+		<if test="category != null and category.size()>0">
+	 		<foreach index="index" item="item" collection="category" open="AND(" separator="OR" close=")">
+        	    s.cat_structname like CONCAT('${item}','%' ) 
+            </foreach>
+		</if>
+		<if test="styleNo != null and styleNo != ''">
+	 		AND s.style_no LIKE CONCAT('${styleNo}','%' ) 
+		</if>
+    </select>
+</mapper>

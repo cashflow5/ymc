@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.supplier.dao.SupplierContractMapper" >
+	<!-- 合同 -->
+	<resultMap id="supplierContractMap" type="com.yougou.merchant.api.supplier.vo.SupplierContract">
+   <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="supplier_id" property="supplierId" jdbcType="VARCHAR" />
+    <result column="contract_no" property="contractNo" jdbcType="VARCHAR" />
+    <result column="clearing_form" property="clearingForm" jdbcType="SMALLINT" />
+    <result column="effective_date" property="effectiveDate" jdbcType="DATE" />
+    <result column="failure_date" property="failureDate" jdbcType="DATE" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="attachment" property="attachment" jdbcType="VARCHAR" />
+    <result column="declarant" property="declarant" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="bind_status" property="bindStatus" jdbcType="CHAR" />
+    <result column="supplier" property="supplier" jdbcType="VARCHAR" />
+    <result column="create_user" property="createUser" jdbcType="VARCHAR" />
+    <result column="mark_remaining_days" property="markRemainingDays" jdbcType="INTEGER" />
+    <result column="contract_remaining_days" property="contractRemainingDays" jdbcType="INTEGER" />
+    <result column="is_Need_Renew" property="isNeedRenew" jdbcType="CHAR" />
+    <result column="is_Use_ERP" property="isUseERP" jdbcType="CHAR" />
+    <result column="is_Need_Deposit" property="isNeedDeposit" jdbcType="CHAR" />
+    <result column="is_need_use_fee" property="isNeedUseFee" jdbcType="CHAR" />
+    <result column="deposit" property="deposit" jdbcType="DECIMAL" />
+    <result column="use_fee" property="useFee" jdbcType="DECIMAL" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="bank_owner" property="bankOwner" jdbcType="VARCHAR" />
+    <result column="bank_account" property="bankAccount" jdbcType="VARCHAR" />
+    <result column="bank_province" property="bankProvince" jdbcType="VARCHAR" />
+    <result column="bank_city" property="bankCity" jdbcType="VARCHAR" />
+    <result column="bank_area" property="bankArea" jdbcType="VARCHAR" />
+    <result column="bank_name" property="bankName" jdbcType="VARCHAR" />
+    <result column="parent_contract_id" property="parentContractId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="pre_deposit" property="preDeposit" jdbcType="DECIMAL" />
+    <result column="pre_useFee" property="preUsefee" jdbcType="DECIMAL" />
+    <result column="is_Transfer_Deposit" property="isTransferDeposit" jdbcType="CHAR" />
+    <result column="renew_flag" property="renewFlag" jdbcType="CHAR" />
+    <result column="is_old" jdbcType="CHAR" property="isOld" />
+    <result column="deposit_status" property="depositStatus" jdbcType="CHAR" />
+    <result column="use_fee_status" property="useFeeStatus" jdbcType="CHAR" />
+	</resultMap>
+	
+	<resultMap id="merchantBrandDeductRateMap" type="com.yougou.merchant.api.supplier.vo.MerchantBrandDeducRate">
+   	<id column="deduct_Id" property="deductId" jdbcType="VARCHAR" />
+    <result column="supplier_Code" property="supplierCode" jdbcType="VARCHAR" />
+    <result column="supplier_Name" property="supplierName" jdbcType="VARCHAR" />
+    <result column="brand_Code" property="brandCode" jdbcType="VARCHAR" />
+    <result column="contract_Code" property="contractCode" jdbcType="VARCHAR" />
+    <result column="contract_status" property="contractStatus" jdbcType="VARCHAR" />
+    <result column="deduct_Rate" property="deductRate" jdbcType="INTEGER" />
+    <result column="contract_Start_Time" property="contractStartTime" jdbcType="DATE" />
+    <result column="contract_End_Time" property="contractEndTime" jdbcType="DATE" />
+    <result column="settlement_Type" property="settlementType" jdbcType="VARCHAR" />  
+    <result column="contract_update_time" property="contractUpdateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+     <update id="updateSupplierContract" parameterType="com.yougou.merchant.api.supplier.vo.SupplierContract">
+		  update tbl_sp_supplier_contract
+    	<set >
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="depositStatus != null" >
+		deposit_status = #{depositStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="useFeeStatus != null" >
+        use_fee_status = #{useFeeStatus,jdbcType=VARCHAR},
+      </if>    
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+	</update>	
+	
+	<select id="selectSupplierContractByContractNo" resultMap="supplierContractMap">
+		select t.* from tbl_sp_supplier_contract t
+		where t.contract_no = #{contractNo}
+	</select>
+	
+	<select id="selectSupplierContractByContractId" resultMap="supplierContractMap">
+		select t.* from tbl_sp_supplier_contract t
+		where t.id = #{contractId}
+	</select>
+	
+	<select id="queryMerchantBrandDeductRateList" resultMap="merchantBrandDeductRateMap">
+		SELECT
+			S.SUPPLIER AS SUPPLIER_NAME,
+			S.SUPPLIER_CODE,
+			TK.DEDUCTION_POINT AS DEDUCT_RATE,
+			TK.BRAND_NO AS BRAND_CODE,
+			TK.ID AS DEDUCT_ID,
+			C.CONTRACT_NO AS CONTRACT_CODE,
+			C.STATUS AS CONTRACT_STATUS,
+			C.EFFECTIVE_DATE AS CONTRACT_START_TIME,
+			C.FAILURE_DATE AS CONTRACT_END_TIME,
+			C.CLEARING_FORM AS SETTLEMENT_TYPE,
+			C.update_time as contract_update_time <!-- added by zhangfeng 2016.5.10  配合财务招商结算，新增合同更新时间返回 -->
+		FROM
+			TBL_SP_SUPPLIER_CONTRACT_TRADEMARK TK,
+			TBL_SP_SUPPLIER_CONTRACT C,
+			TBL_SP_SUPPLIER S
+		WHERE
+			S.ID = C.SUPPLIER_ID
+		AND C.ID = TK.CONTRACT_ID
+		AND TK.BRAND_NO IS NOT NULL
+		AND TK.DEDUCTION_POINT IS NOT NULL
+		<!-- AND C.STATUS IN ('7', '8') added by zhangfeng 2016.5.19  配合财务招商结算返回所有状态合同 -->
+		<if test="updateTimeStart != null and updateTimeStart != ''" >
+		AND C.UPDATE_TIME >= #{updateTimeStart}
+      	</if>  
+      	<if test="updateTimeStart != null and updateTimeStart != '' and updateTimeEnd != null and updateTimeEnd != ''" >
+		AND C.UPDATE_TIME <![CDATA[<=]]> #{updateTimeEnd}
+      	</if> 
+      	<if test="merchantCodelist != null" >
+      	AND S.SUPPLIER_CODE in (
+        <foreach collection="merchantCodelist" separator="," item="item">
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+        )
+      	</if> 
+      	<if test="query != null">
+      	limit #{query.offset},#{query.pageSize}
+      	</if> 
+	</select>
+	
+	<select id="queryMerchantBrandDeductRateCount" resultType="java.lang.Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			TBL_SP_SUPPLIER_CONTRACT_TRADEMARK TK,
+			TBL_SP_SUPPLIER_CONTRACT C,
+			TBL_SP_SUPPLIER S
+		WHERE
+			S.ID = C.SUPPLIER_ID
+		AND C.ID = TK.CONTRACT_ID
+		AND TK.BRAND_NO IS NOT NULL
+		AND TK.DEDUCTION_POINT IS NOT NULL
+		<!-- AND C.STATUS IN ('7', '8') added by zhangfeng 2016.5.19  配合财务招商结算返回所有状态合同  -->
+		<if test="updateTimeStart != null and updateTimeStart != ''" >
+		AND C.UPDATE_TIME >= #{updateTimeStart}
+      	</if>  
+      	<if test="updateTimeStart != null and updateTimeStart != '' and updateTimeEnd != null and updateTimeEnd != ''" >
+		AND C.UPDATE_TIME <![CDATA[<=]]> #{updateTimeEnd}
+      	</if>  
+      	<if test="merchantCodelist != null" >
+      	AND S.SUPPLIER_CODE in (
+        <foreach collection="merchantCodelist" separator="," item="item">
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+        )
+      	</if>   
+      	  	
+	</select>
+</mapper>

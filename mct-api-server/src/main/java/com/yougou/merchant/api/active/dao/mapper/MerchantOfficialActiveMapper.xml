@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yougou.merchant.api.active.dao.MerchantOfficialActiveMapper" >
+    
+    <resultMap id="activityEnrollMerchantVoMapper" type="com.yougou.merchant.api.active.vo.ActivityEnrollMerchantVo" >    
+        <result column="merchant_code" property="merchantCode" jdbcType="VARCHAR" />
+        <result column="merchant_name" property="merchantName" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+    </resultMap>
+    
+    <resultMap id="activityEnrollMerchantDetailsVoMapper" type="com.yougou.merchant.api.active.vo.ActivityEnrollMerchantDetailsVo" >    
+        <result column="active_price" property="activePrice" jdbcType="VARCHAR" />
+        <result column="comodity_no" property="commodityNo" jdbcType="VARCHAR" />
+    </resultMap>
+  
+    
+	<select id="queryActivityEnrollMerchant" resultMap="activityEnrollMerchantVoMapper"     parameterType="java.util.HashMap">
+			select  distinct merchant_code,merchant_name,Status from tbl_merchant_active_signup  s 
+			<if test="commodityNo !=null and commodityNo  !='' ">
+				, tbl_merchant_active_commodity c
+			</if>
+			where s.active_id=#{activeId} and  s.status in(2,3,4)
+			<if test="merchantName !=null and merchantName  !='' ">
+				and s.merchant_name  like  CONCAT('%',#{merchantName},'%' )    
+			</if>
+			<if test="commodityNo !=null and commodityNo  !='' ">
+				and  s.id=c.signup_id  and c.comodity_no  like  CONCAT('%',#{commodityNo},'%' ) 
+			</if>
+			<if test="merchantCode !=null and merchantCode  !='' ">
+				and merchant_Code=#{merchantCode}
+			</if>
+			<if test=" start != null and pageSize != null">
+			 	limit #{start},#{pageSize}	
+			</if>
+	</select>
+	<select id="queryActivityEnrollMerchantCount" resultType="int"    parameterType="java.util.HashMap">
+			select count(*) from (
+			select distinct merchant_code,merchant_name,Status    from tbl_merchant_active_signup  s 
+			<if test="commodityNo !=null and commodityNo  !='' ">
+				, tbl_merchant_active_commodity c
+			</if>
+			where s.active_id=#{activeId}  and  s.status in(2,3,4)
+			<if test="merchantName !=null and merchantName  !='' ">
+				and s.merchant_name like  CONCAT('%',#{merchantName},'%' )    
+			</if>
+			<if test="merchantCode !=null and merchantCode  !='' ">
+				and merchant_Code=#{merchantCode}
+			</if>
+			<if test="commodityNo !=null and commodityNo  !='' ">
+				and  s.id=c.signup_id  and c.comodity_no like  CONCAT('%',#{commodityNo},'%' )     
+			</if>
+			) as signup
+	</select>
+	
+	<select id="queryActivityEnrollMerchantDetails" resultMap="activityEnrollMerchantDetailsVoMapper"     parameterType="java.util.HashMap">
+				select distinct   c.active_price ,s.merchant_code,c.comodity_no
+				from tbl_merchant_active_signup  s , tbl_merchant_active_commodity c
+				where s.active_id=#{activeId}  and  s.status in(2,3,4)
+				<if test="merchantName !=null and merchantName  !='' ">
+					and s.merchant_name like  CONCAT('%',#{merchantName},'%' ) 
+				</if>
+				<if test="commodityNo !=null and commodityNo  !='' ">
+				 	and c.comodity_no like  CONCAT('%',#{commodityNo},'%' ) 
+				</if>
+				<if test="merchantCode !=null and merchantCode  !='' ">
+					and s.merchant_Code=#{merchantCode}
+				</if>
+				
+				and  s.id=c.signup_id
+				<if test=" start != null and pageSize != null">
+				 	limit #{start},#{pageSize}	
+				</if>
+	</select>
+	<select id="queryActivityEnrollMerchantDetailsCount" resultType="int"    parameterType="java.util.HashMap">
+				select count(*) from (
+					select  distinct c.active_price ,s.merchant_code,c.comodity_no
+					from tbl_merchant_active_signup  s , tbl_merchant_active_commodity c
+					where s.active_id=#{activeId}  and  s.status in(2,3,4)
+					<if test="merchantName !=null and merchantName  !='' ">
+						and s.merchant_name  like  CONCAT('%',#{merchantName},'%' ) 
+					</if>
+					<if test="commodityNo !=null and commodityNo  !='' ">
+					 	and c.comodity_no  like  CONCAT('%',#{commodityNo},'%' ) 
+					</if>
+					<if test="merchantCode !=null and merchantCode  !='' ">
+						and s.merchant_Code=#{merchantCode}
+					</if>
+					and  s.id=c.signup_id
+				)as signup
+	</select>
+	
+	<update id="merchanteEnrollExamine"  parameterType="java.util.HashMap" >
+                update tbl_merchant_active_signup 
+                 set status = #{status},audit_remark= #{auditRemark}
+                 where
+                 merchant_code in
+				 <foreach collection="examineList" item="item" index="index" open="(" close=")" separator=",">
+		                #{item}
+		         </foreach>
+		         and active_id=#{activeId}
+	</update>
+	<select id="queryCouponAmount" resultType="int"    parameterType="java.util.HashMap">
+			select coupon_amount from tbl_merchant_active_signup  s ,
+				tbl_merchant_active_commodity c
+				 where s.merchant_code=#{merchantCode}
+					 and active_id=#{activeId}
+				and s.id=c.signup_id and comodity_no=#{commodityNo}
+	</select>
+	<select id="checkExamineEnrollInfo" resultType="java.util.HashMap"    parameterType="java.util.HashMap">
+			select * from tbl_merchant_active_signup  s 
+				 where s.merchant_code in
+				  <foreach collection="examineList" item="item" index="index" open="(" close=")" separator=",">
+		                #{item}
+		         </foreach>
+				 and status != 2
+				 and active_id=#{activeId}
+	</select>
+	
+	<select id="queryAmountMap" resultType="java.util.HashMap"    parameterType="java.util.HashMap">
+		select c.comodity_No as commodityNo ,s.active_Id activeId,c.coupon_amount as amount   from tbl_merchant_active_signup  s,tbl_merchant_active_commodity  c  
+ 		where    c.signup_id=s.id  and
+ 		   <foreach collection="activeIdList" item="map" index="index" open="(" close=")" separator="or">
+		              ( comodity_no=#{map.commodityNo} and active_Id=#{map.activeId})
+		   </foreach>
+		   
+              and status=3
+	</select>
+	
+</mapper>
